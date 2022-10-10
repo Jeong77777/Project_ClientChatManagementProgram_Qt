@@ -13,12 +13,14 @@ SOURCES += \
     clientmanagerform.cpp \
     main.cpp \
     mainwindow.cpp \
+    productitem.cpp \
     productmanagerform.cpp
 
 HEADERS += \
     clientitem.h \
     clientmanagerform.h \
     mainwindow.h \
+    productitem.h \
     productmanagerform.h
 
 FORMS += \

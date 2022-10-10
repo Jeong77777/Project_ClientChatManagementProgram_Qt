@@ -110,7 +110,7 @@
        <item>
         <widget class="QGroupBox" name="inputGroupBox">
          <property name="title">
-          <string>Add/Modify</string>
+          <string>Add / Modify</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
@@ -190,7 +190,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton">
+             <widget class="QPushButton" name="cleanPushButton">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -222,7 +222,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="verticalLayoutWidget">
       <layout class="QVBoxLayout" name="listVerticalLayout">
        <item>
         <widget class="QTreeWidget" name="treeWidget">

@@ -29,16 +29,17 @@ private slots:
     void on_addPushButton_clicked();
     void on_modifyPushButton_clicked();
     void on_searchPushButton_clicked();
-
     void on_showAllPushButton_clicked();
+    void on_cleanPushButton_clicked();
 
 private:
     int makeId();
 
     QMap<int, ClientItem*> clientList;
-    QMap<int, ClientItem*> searchList; //검색결과
     Ui::ClientManagerForm *ui;
     QMenu* menu;
+
+    void cleanInputLineEdit();
 };
 
 #endif // CLIENTMANAGERFORM_H

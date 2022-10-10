@@ -4,6 +4,7 @@
 
 #include <QFile>
 #include <QMenu>
+#include <QMessageBox>
 
 ClientManagerForm::ClientManagerForm(QWidget *parent) :
     QWidget(parent),
@@ -89,6 +90,14 @@ void ClientManagerForm::showContextMenu(const QPoint &pos)
     menu->exec(globalPos);
 }
 
+void ClientManagerForm::cleanInputLineEdit()
+{
+    ui->idLineEdit->clear();
+    ui->nameLineEdit->clear();
+    ui->phoneNumberLineEdit->clear();
+    ui->addressLineEdit->clear();
+}
+
 void ClientManagerForm::on_searchPushButton_clicked()
 {
     int i = ui->searchComboBox->currentIndex();
@@ -115,15 +124,19 @@ void ClientManagerForm::on_modifyPushButton_clicked()
         name = ui->nameLineEdit->text();
         number = ui->phoneNumberLineEdit->text();
         address = ui->addressLineEdit->text();
-        c->setName(name);
-        c->setPhoneNumber(number);
-        c->setAddress(address);
-        clientList[key] = c;
 
-        ui->idLineEdit->clear();
-        ui->nameLineEdit->clear();
-        ui->phoneNumberLineEdit->clear();
-        ui->addressLineEdit->clear();
+        if(name.length() && number.length() && address.length()) {
+            c->setName(name);
+            c->setPhoneNumber(number);
+            c->setAddress(address);
+            clientList[key] = c;
+
+            //cleanInputLineEdit();
+        }
+        else {
+            QMessageBox::information(this, tr("Add error"),
+               QString(tr("Some items have not been entered.")), QMessageBox::Ok);
+        }
     }
 }
 
@@ -134,15 +147,17 @@ void ClientManagerForm::on_addPushButton_clicked()
     name = ui->nameLineEdit->text();
     number = ui->phoneNumberLineEdit->text();
     address = ui->addressLineEdit->text();
-    if(name.length()) {
+
+    if(name.length() && number.length() && address.length()) {
         ClientItem* c = new ClientItem(id, name, number, address);
         clientList.insert(id, c);
         ui->treeWidget->addTopLevelItem(c);
 
-        ui->idLineEdit->clear();
-        ui->nameLineEdit->clear();
-        ui->phoneNumberLineEdit->clear();
-        ui->addressLineEdit->clear();
+        cleanInputLineEdit();
+    }
+    else {
+        QMessageBox::information(this, tr("Add error"),
+           QString(tr("Some items have not been entered.")), QMessageBox::Ok);
     }
 }
 
@@ -161,5 +176,10 @@ void ClientManagerForm::on_showAllPushButton_clicked()
     for (const auto& v : qAsConst(clientList)) {
         v->setHidden(false);
     }
+}
+
+void ClientManagerForm::on_cleanPushButton_clicked()
+{
+    cleanInputLineEdit();
 }
 
