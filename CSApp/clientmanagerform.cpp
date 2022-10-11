@@ -176,6 +176,7 @@ void ClientManagerForm::on_showAllPushButton_clicked()
     for (const auto& v : qAsConst(clientList)) {
         v->setHidden(false);
     }
+    ui->searchLineEdit->clear();
 }
 
 void ClientManagerForm::on_cleanPushButton_clicked()

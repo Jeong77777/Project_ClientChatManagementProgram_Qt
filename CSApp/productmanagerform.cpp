@@ -190,6 +190,7 @@ void ProductManagerForm::on_showAllPushButton_clicked()
     for (const auto& v : qAsConst(productList)) {
         v->setHidden(false);
     }
+    ui->searchLineEdit->clear();
 }
 
 void ProductManagerForm::on_cleanPushButton_clicked()
