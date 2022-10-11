@@ -1,7 +1,7 @@
 #include "productitem.h"
 
 #include <QLabel>
-#include <iostream>
+//#include <iostream>
 
 using namespace std;
 

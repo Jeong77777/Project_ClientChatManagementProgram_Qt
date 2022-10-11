@@ -13,6 +13,8 @@ SOURCES += \
     clientmanagerform.cpp \
     main.cpp \
     mainwindow.cpp \
+    orderitem.cpp \
+    ordermanagerform.cpp \
     productitem.cpp \
     productmanagerform.cpp
 
@@ -20,12 +22,15 @@ HEADERS += \
     clientitem.h \
     clientmanagerform.h \
     mainwindow.h \
+    orderitem.h \
+    ordermanagerform.h \
     productitem.h \
     productmanagerform.h
 
 FORMS += \
     clientmanagerform.ui \
     mainwindow.ui \
+    ordermanagerform.ui \
     productmanagerform.ui
 
 TRANSLATIONS += \
