@@ -10,11 +10,13 @@ private:
     int productId;
 
 public:
-    explicit OrderItem(int id = 0, int clientId = 0, QString clientName = "",
-                       int productId = 0, QString productName = "", int quantity = 0, int total = 0);
+    explicit OrderItem(int id = 0, QString date="0000-00-00", int clientId = 0, QString clientName = "",
+                       int productId = 0, QString productName = "", int quantity = 0, QString total = "0");
 
     int getClinetId() const;
     void setClientId(int);
+    QString getDate() const;
+    void setDate(QString);
     QString getClientName() const;
     void setClientName(QString&);
     int getProductId() const;
@@ -23,6 +25,9 @@ public:
     void setProductName(QString&);
     int getQuantity() const;
     void setQuantity(int);
+    QString getTotal() const;
+    void setTotal(QString);
+
     int id() const;
     //bool operator==(const OrderItem &other) const;
 };

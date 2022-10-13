@@ -283,7 +283,7 @@
          </column>
          <column>
           <property name="text">
-           <string>Price</string>
+           <string>Unit Price</string>
           </property>
          </column>
          <column>

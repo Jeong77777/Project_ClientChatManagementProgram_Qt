@@ -5,18 +5,29 @@
 
 using namespace std;
 
-OrderItem::OrderItem(int id, int clientId, QString clientName,
-                     int productId, QString productName, int quantity, int total)
+OrderItem::OrderItem(int id, QString date, int clientId, QString clientName,
+                     int productId, QString productName, int quantity, QString total)
 {
     this->clientId = clientId;
     this->productId = productId;
 
     setText(0, QString::number(id));
-    setText(1, clientName);
-    setText(2, productName);
-    setText(3, QString::number(quantity));
-    setText(4, QString::number(total));
+    setText(1, date);
+    setText(2, clientName);
+    setText(3, productName);
+    setText(4, QString::number(quantity));
+    setText(5, total);
 
+}
+
+QString OrderItem::getDate() const
+{
+    return text(1);
+}
+
+void OrderItem::setDate(QString date)
+{
+    setText(1, date);
 }
 
 int OrderItem::getClinetId() const
@@ -31,7 +42,7 @@ void OrderItem::setClientId(int clientId)
 
 QString OrderItem::getClientName() const
 {
-    return text(1);
+    return text(2);
 }
 
 void OrderItem::setClientName(QString& clientName)
@@ -51,12 +62,12 @@ void OrderItem::setProductId(int productId)
 
 QString OrderItem::getProductName() const
 {
-    return text(2);
+    return text(3);
 }
 
 void OrderItem::setProductName(QString& productName)
 {
-    setText(2, productName);
+    setText(3, productName);
 }
 
 int OrderItem::getQuantity() const
@@ -66,7 +77,17 @@ int OrderItem::getQuantity() const
 
 void OrderItem::setQuantity(int quantity)
 {
-    setText(3, QString::number(quantity));
+    setText(4, QString::number(quantity));
+}
+
+QString OrderItem::getTotal() const
+{
+    return text(5);
+}
+
+void OrderItem::setTotal(QString total)
+{
+    setText(5, total);
 }
 
 int OrderItem::id() const
