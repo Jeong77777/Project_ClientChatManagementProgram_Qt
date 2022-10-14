@@ -1,12 +1,19 @@
 #include "ordermanagerform.h"
+#include "ui_clientdialog.h"
 #include "ui_ordermanagerform.h"
 #include "orderitem.h"
+#include "clientdialog.h"
+#include "productdialog.h"
+#include "clientitem.h"
+#include "productitem.h"
+#include "ui_productdialog.h"
 
 #include <QFile>
 #include <QMenu>
+#include <QMessageBox>
 
-OrderManagerForm::OrderManagerForm(QWidget *parent) :
-    QWidget(parent),
+OrderManagerForm::OrderManagerForm(QWidget *parent, ClientDialog *clientDialog, ProductDialog *productDialog) :
+    QWidget(parent), clientDialog(clientDialog), productDialog(productDialog),
     ui(new Ui::OrderManagerForm)
 {
     ui->setupUi(this);
@@ -95,9 +102,9 @@ void OrderManagerForm::cleanInputLineEdit()
 {
     ui->idLineEdit->clear();
     ui->dateEdit->setDate(QDate(2000,01,01));
-    ui->nameLineEdit->clear();
+    ui->clientLineEdit->clear();
     ui->productLineEdit->clear();
-    ui->quantityLineEdit->clear();
+    ui->quantitySpinBox->clear();
 }
 
 void OrderManagerForm::on_searchPushButton_clicked()
@@ -144,23 +151,47 @@ void OrderManagerForm::on_modifyPushButton_clicked()
 
 void OrderManagerForm::on_addPushButton_clicked()
 {
-//    QString name, number, address;
-//    int id = makeId( );
-//    name = ui->nameLineEdit->text();
-//    number = ui->phoneNumberLineEdit->text();
-//    address = ui->addressLineEdit->text();
+    QString date, clientName, productName, total;
+    int id = makeId( );
+    int clientId, productId, quantity;
 
-//    if(name.length() && number.length() && address.length()) {
-//        ClientItem* c = new ClientItem(id, name, number, address);
-//        clientList.insert(id, c);
-//        ui->treeWidget->addTopLevelItem(c);
+    clientId = ui->clientLineEdit->text().split(" ")[0].toInt();
+    productId = ui->clientLineEdit->text().split(" ")[0].toInt();
+    quantity = ui->quantitySpinBox->text().toInt();
+    clientName = ui->clientLineEdit->text();
+    productName = ui->productLineEdit->text();
+    date = ui->dateEdit->date().toString("yyyy-MM-dd");
 
-//        cleanInputLineEdit();
-//    }
-//    else {
-//        QMessageBox::information(this, tr("Add error"),
-//           QString(tr("Some items have not been entered.")), QMessageBox::Ok);
-//    }
+    qDebug() <<"clientId: "<<clientId;
+    qDebug() <<"productId: "<<productId;
+
+    emit sendClientId(clientId);
+    emit sendProductId(productId);
+
+    if( (tmpClient != nullptr) && (tmpProduct != nullptr)) {
+
+        if( (tmpClient->id() == clientId) && (tmpProduct->id() == productId)
+                && (quantity != 0)) {
+            qDebug()<<"testtt";
+            total = QString::number(quantity * tmpProduct->getPrice());
+
+            OrderItem* c = new OrderItem(id, date, clientId, clientName,
+                                         productId, productName, quantity, total);
+            orderList.insert(id, c);
+            ui->treeWidget->addTopLevelItem(c);
+
+            cleanInputLineEdit();
+        }
+        else{
+            QMessageBox::information(this, tr("Add error"),
+                                     QString(tr("Some items have not been entered.")), QMessageBox::Ok);
+        }
+
+    }
+    else{
+        QMessageBox::information(this, tr("Add error"),
+                                 QString(tr("Some items have not been entered.")), QMessageBox::Ok);
+    }
 }
 
 void OrderManagerForm::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
@@ -188,6 +219,38 @@ void OrderManagerForm::on_cleanPushButton_clicked()
 
 void OrderManagerForm::on_inputClientPushButton_clicked()
 {
+    clientDialog->show();
 
+    if (clientDialog->exec() == QDialog::Accepted) {
+        ClientItem* c = (ClientItem*)clientDialog->ui->treeWidget->currentItem();
+        if(c!=nullptr) {
+            ui->clientLineEdit->setText(QString::number(c->id()) + " (" + c->getName() + ")");            
+        }
+    }
+    clientDialog->ui->treeWidget->clear();
+    clientDialog->ui->lineEdit->clear();
 }
 
+void OrderManagerForm::on_inputProductPushButton_clicked()
+{
+    qDebug()<<"clicked!!";
+    productDialog->show();
+    if (productDialog->exec() == QDialog::Accepted) {
+        ProductItem* p = (ProductItem*)productDialog->ui->treeWidget->currentItem();
+        if(p!=nullptr) {
+            ui->productLineEdit->setText(QString::number(p->id()) + " (" + p->getName() + ")");            
+        }
+    }
+    productDialog->ui->treeWidget->clear();
+    productDialog->ui->lineEdit->clear();
+}
+
+void OrderManagerForm::receiveClientInfo(ClientItem* c)
+{
+    tmpClient = c;
+}
+
+void OrderManagerForm::receiveProductInfo(ProductItem* p)
+{
+    tmpProduct = p;    
+}

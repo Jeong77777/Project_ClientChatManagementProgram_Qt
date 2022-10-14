@@ -184,3 +184,40 @@ void ClientManagerForm::on_cleanPushButton_clicked()
     cleanInputLineEdit();
 }
 
+void ClientManagerForm::receiveWord(QString word)
+{
+    QMap<int, ClientItem*> searchList;
+
+    auto flag = Qt::MatchCaseSensitive|Qt::MatchContains;
+
+    auto items1 = ui->treeWidget->findItems(word, flag, 0);
+    foreach(auto i, items1) {
+        ClientItem* c = static_cast<ClientItem*>(i);
+        searchList.insert(c->id(), c);
+    }
+
+    auto items2 = ui->treeWidget->findItems(word, flag, 1);
+    foreach(auto i, items2) {
+        ClientItem* c = static_cast<ClientItem*>(i);
+        searchList.insert(c->id(), c);
+    }
+
+    for (const auto& v : qAsConst(searchList)) {
+        ClientItem* c = v;
+        emit sendClientInfo((ClientItem*)c);
+    }
+}
+
+void ClientManagerForm::receiveId(int id)
+{
+    for (const auto& v : qAsConst(clientList)) {
+        ClientItem* c = v;
+        if(c->id() == id) {
+            emit sendClientInfo(c);
+            return;
+        }
+    }
+}
+
+
+

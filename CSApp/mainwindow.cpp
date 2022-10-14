@@ -3,12 +3,18 @@
 #include "clientmanagerform.h"
 #include "productmanagerform.h"
 #include "ordermanagerform.h"
+#include "clientdialog.h"
+#include "productdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // Dialog
+    ClientDialog *clientDialog = new ClientDialog();
+    ProductDialog *productDialog = new ProductDialog();
 
     // client manager form
     clientForm = new ClientManagerForm(this);
@@ -21,8 +27,18 @@ MainWindow::MainWindow(QWidget *parent)
     productForm->setWindowTitle(tr("Product Info"));
 
     // order manager form
-    OrderManagerForm *orderForm = new OrderManagerForm(this);
+    OrderManagerForm *orderForm = new OrderManagerForm(this, clientDialog, productDialog);
     orderForm->setWindowTitle(tr("Order Info"));
+
+    connect(clientDialog, SIGNAL(sendWord(QString)), clientForm, SLOT(receiveWord(QString)));
+    connect(clientForm, SIGNAL(sendClientInfo(ClientItem*)), clientDialog, SLOT(receiveClientInfo(ClientItem*)));
+    connect(productDialog, SIGNAL(sendWord(QString)), productForm, SLOT(receiveWord(QString)));
+    connect(productForm, SIGNAL(sendProductInfo(ProductItem*)), productDialog, SLOT(receiveProductInfo(ProductItem*)));
+
+    connect(orderForm, SIGNAL(sendClientId(int)), clientForm, SLOT(receiveId(int)));
+    connect(clientForm, SIGNAL(sendClientInfo(ClientItem*)), orderForm, SLOT(receiveClientInfo(ClientItem*)));
+    connect(orderForm, SIGNAL(sendProductId(int)), productForm, SLOT(receiveId(int)));
+    connect(productForm, SIGNAL(sendProductInfo(ProductItem*)), orderForm, SLOT(receiveProductInfo(ProductItem*)));
 
     // mdi
     QMdiSubWindow *cw = ui->mdiArea->addSubWindow(clientForm);

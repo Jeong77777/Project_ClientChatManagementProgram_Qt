@@ -8,6 +8,10 @@
 
 class QMenu;
 class QTreeWidgetItem;
+class ClientDialog;
+class ProductDialog;
+class ClientItem;
+class ProductItem;
 
 namespace Ui {
 class OrderManagerForm;
@@ -18,8 +22,12 @@ class OrderManagerForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit OrderManagerForm(QWidget *parent = nullptr);
+    explicit OrderManagerForm(QWidget *parent = nullptr,
+                              ClientDialog *clientDialog = nullptr, ProductDialog *productDialog = nullptr);
     ~OrderManagerForm();
+
+    ClientDialog *clientDialog;
+    ProductDialog *productDialog;
 
 private slots:
     /* QTreeWidget을 위한 슬롯 */
@@ -34,6 +42,14 @@ private slots:
 
 
     void on_inputClientPushButton_clicked();
+    void on_inputProductPushButton_clicked();
+
+    void receiveClientInfo(ClientItem*);
+    void receiveProductInfo(ProductItem*);
+
+signals:
+    void sendClientId(int);
+    void sendProductId(int);
 
 private:
     int makeId();
@@ -41,6 +57,8 @@ private:
     QMap<int, OrderItem*> orderList;
     Ui::OrderManagerForm *ui;
     QMenu* menu;
+    ClientItem *tmpClient;
+    ProductItem *tmpProduct;
 
     void cleanInputLineEdit();
 };

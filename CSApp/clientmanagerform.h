@@ -31,6 +31,11 @@ private slots:
     void on_searchPushButton_clicked();
     void on_showAllPushButton_clicked();
     void on_cleanPushButton_clicked();
+    void receiveWord(QString);
+    void receiveId(int);
+
+signals:
+    void sendClientInfo(ClientItem*);
 
 private:
     int makeId();

@@ -212,3 +212,39 @@ void ProductManagerForm::on_searchComboBox_currentIndexChanged(int index)
     }
 }
 
+void ProductManagerForm::receiveWord(QString word)
+{
+    QMap<int, ProductItem*> searchList;
+
+    auto flag = Qt::MatchCaseSensitive|Qt::MatchContains;
+
+    auto items1 = ui->treeWidget->findItems(word, flag, 0);
+    foreach(auto i, items1) {
+        ProductItem* p = static_cast<ProductItem*>(i);
+        searchList.insert(p->id(), p);
+    }
+
+    auto items2 = ui->treeWidget->findItems(word, flag, 2);
+    foreach(auto i, items2) {
+        ProductItem* p = static_cast<ProductItem*>(i);
+        searchList.insert(p->id(), p);
+    }
+
+    for (const auto& v : qAsConst(searchList)) {
+        ProductItem* p = v;
+        emit sendProductInfo((ProductItem*)p);
+    }
+}
+
+void ProductManagerForm::receiveId(int id)
+{
+    for (const auto& v : qAsConst(productList)) {
+        ProductItem* p = v;
+        if(p->id() == id) {
+            emit sendProductInfo(p);
+            return;
+        }
+    }
+}
+
+

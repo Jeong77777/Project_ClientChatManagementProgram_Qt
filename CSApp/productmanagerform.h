@@ -31,6 +31,12 @@ private slots:
 
     void on_searchComboBox_currentIndexChanged(int index);
 
+    void receiveWord(QString);
+    void receiveId(int);
+
+signals:
+    void sendProductInfo(ProductItem*);
+
 private:
     int makeId();
 
