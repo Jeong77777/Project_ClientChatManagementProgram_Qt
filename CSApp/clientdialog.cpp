@@ -29,6 +29,7 @@ void ClientDialog::on_pushButton_clicked()
 void ClientDialog::receiveClientInfo(ClientItem * c)
 {
     ClientItem* client = new ClientItem(c->id(), c->getName(), c->getPhoneNumber(), c->getAddress());
+    qDebug() <<" receive in dialog";
     ui->treeWidget->addTopLevelItem(client);
 }
 

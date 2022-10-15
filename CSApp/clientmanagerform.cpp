@@ -13,7 +13,8 @@ ClientManagerForm::ClientManagerForm(QWidget *parent) :
     ui->setupUi(this);
 
     QList<int> sizes;
-    sizes << 200 << 540;
+    //sizes << 200 << 540;
+    sizes << 200 << 54000;
     ui->splitter->setSizes(sizes);
 
     QAction* removeAction = new QAction(tr("&Remove"));
@@ -134,7 +135,7 @@ void ClientManagerForm::on_modifyPushButton_clicked()
             //cleanInputLineEdit();
         }
         else {
-            QMessageBox::information(this, tr("Add error"),
+            QMessageBox::information(this, tr("Modify error"),
                QString(tr("Some items have not been entered.")), QMessageBox::Ok);
         }
     }
@@ -204,7 +205,7 @@ void ClientManagerForm::receiveWord(QString word)
 
     for (const auto& v : qAsConst(searchList)) {
         ClientItem* c = v;
-        emit sendClientInfo((ClientItem*)c);
+        emit sendClientToDialog((ClientItem*)c);
     }
 }
 
@@ -213,8 +214,7 @@ void ClientManagerForm::receiveId(int id)
     for (const auto& v : qAsConst(clientList)) {
         ClientItem* c = v;
         if(c->id() == id) {
-            emit sendClientInfo(c);
-            return;
+            emit sendClientToManager(c);
         }
     }
 }

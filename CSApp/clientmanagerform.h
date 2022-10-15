@@ -35,7 +35,8 @@ private slots:
     void receiveId(int);
 
 signals:
-    void sendClientInfo(ClientItem*);
+    void sendClientToDialog(ClientItem*);
+    void sendClientToManager(ClientItem*);
 
 private:
     int makeId();

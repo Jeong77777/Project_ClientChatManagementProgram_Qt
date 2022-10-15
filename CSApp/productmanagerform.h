@@ -35,7 +35,8 @@ private slots:
     void receiveId(int);
 
 signals:
-    void sendProductInfo(ProductItem*);
+    void sendProductToDialog(ProductItem*);
+    void sendProductToManager(ProductItem*);
 
 private:
     int makeId();

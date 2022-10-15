@@ -31,14 +31,14 @@ MainWindow::MainWindow(QWidget *parent)
     orderForm->setWindowTitle(tr("Order Info"));
 
     connect(clientDialog, SIGNAL(sendWord(QString)), clientForm, SLOT(receiveWord(QString)));
-    connect(clientForm, SIGNAL(sendClientInfo(ClientItem*)), clientDialog, SLOT(receiveClientInfo(ClientItem*)));
+    connect(clientForm, SIGNAL(sendClientToDialog(ClientItem*)), clientDialog, SLOT(receiveClientInfo(ClientItem*)));
     connect(productDialog, SIGNAL(sendWord(QString)), productForm, SLOT(receiveWord(QString)));
-    connect(productForm, SIGNAL(sendProductInfo(ProductItem*)), productDialog, SLOT(receiveProductInfo(ProductItem*)));
+    connect(productForm, SIGNAL(sendProductToDialog(ProductItem*)), productDialog, SLOT(receiveProductInfo(ProductItem*)));
 
     connect(orderForm, SIGNAL(sendClientId(int)), clientForm, SLOT(receiveId(int)));
-    connect(clientForm, SIGNAL(sendClientInfo(ClientItem*)), orderForm, SLOT(receiveClientInfo(ClientItem*)));
+    connect(clientForm, SIGNAL(sendClientToManager(ClientItem*)), orderForm, SLOT(receiveClientInfo(ClientItem*)));
     connect(orderForm, SIGNAL(sendProductId(int)), productForm, SLOT(receiveId(int)));
-    connect(productForm, SIGNAL(sendProductInfo(ProductItem*)), orderForm, SLOT(receiveProductInfo(ProductItem*)));
+    connect(productForm, SIGNAL(sendProductToManager(ProductItem*)), orderForm, SLOT(receiveProductInfo(ProductItem*)));
 
     // mdi
     QMdiSubWindow *cw = ui->mdiArea->addSubWindow(clientForm);

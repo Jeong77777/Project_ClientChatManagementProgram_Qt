@@ -72,7 +72,7 @@ void OrderItem::setProductName(QString& productName)
 
 int OrderItem::getQuantity() const
 {
-    return text(3).toInt();
+    return text(4).toInt();
 }
 
 void OrderItem::setQuantity(int quantity)

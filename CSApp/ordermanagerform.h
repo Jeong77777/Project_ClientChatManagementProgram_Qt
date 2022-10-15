@@ -57,8 +57,10 @@ private:
     QMap<int, OrderItem*> orderList;
     Ui::OrderManagerForm *ui;
     QMenu* menu;
-    ClientItem *tmpClient;
-    ProductItem *tmpProduct;
+    ClientItem *searchedClient;
+    ProductItem *searchedProduct;
+    bool searchedClientFlag;
+    bool searchedProductFlag;
 
     void cleanInputLineEdit();
 };

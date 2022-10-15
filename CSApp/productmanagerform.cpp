@@ -13,7 +13,8 @@ ProductManagerForm::ProductManagerForm(QWidget *parent) :
     ui->setupUi(this);
 
     QList<int> sizes;
-    sizes << 200 << 540;
+    //sizes << 200 << 540;
+    sizes << 200 << 54000;
     ui->splitter->setSizes(sizes);
 
     QAction* removeAction = new QAction(tr("&Remove"));
@@ -59,8 +60,8 @@ ProductManagerForm::~ProductManagerForm()
     for (const auto& v : qAsConst(productList)) {
         ProductItem* c = v;
         out << c->id() << ", " << c->getType() << ", ";
-        out << c->getName() << ", " << c->getStock() << ", ";
-        out << c->getPrice() << "\n";
+        out << c->getName() << ", " << c->getPrice() << ", ";
+        out << c->getStock() << "\n";
     }
     file.close( );
 }
@@ -129,7 +130,7 @@ void ProductManagerForm::on_modifyPushButton_clicked()
     QTreeWidgetItem* item = ui->treeWidget->currentItem();
     if(item != nullptr) {
         int key = item->text(0).toInt();
-        ProductItem* c = productList[key];
+        ProductItem* p = productList[key];
         QString type, name, price, stock;
         type = ui->typeComboBox->currentText();
         name = ui->nameLineEdit->text();
@@ -137,16 +138,16 @@ void ProductManagerForm::on_modifyPushButton_clicked()
         stock = ui->stockLineEdit->text();
 
         if(name.length() && price.length() && stock.length()) {
-            c->setType(type);
-            c->setName(name);
-            c->setPrice(price.toInt());
-            c->setStock(stock.toInt());
-            productList[key] = c;
+            p->setType(type);
+            p->setName(name);
+            p->setPrice(price.toInt());
+            p->setStock(stock.toInt());
+            productList[key] = p;
 
             //cleanInputLineEdit();
         }
         else {
-            QMessageBox::information(this, tr("Add error"),
+            QMessageBox::information(this, tr("Modify error"),
                QString(tr("Some items have not been entered.")), QMessageBox::Ok);
         }
     }
@@ -232,7 +233,7 @@ void ProductManagerForm::receiveWord(QString word)
 
     for (const auto& v : qAsConst(searchList)) {
         ProductItem* p = v;
-        emit sendProductInfo((ProductItem*)p);
+        emit sendProductToDialog((ProductItem*)p);
     }
 }
 
@@ -241,8 +242,7 @@ void ProductManagerForm::receiveId(int id)
     for (const auto& v : qAsConst(productList)) {
         ProductItem* p = v;
         if(p->id() == id) {
-            emit sendProductInfo(p);
-            return;
+            emit sendProductToManager(p);
         }
     }
 }

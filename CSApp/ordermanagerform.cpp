@@ -18,8 +18,12 @@ OrderManagerForm::OrderManagerForm(QWidget *parent, ClientDialog *clientDialog, 
 {
     ui->setupUi(this);
 
+    searchedClientFlag = false;
+    searchedProductFlag = false;
+    cleanInputLineEdit();
+
     QList<int> sizes;
-    sizes << 200 << 540;
+    sizes << 200 << 54000;
     ui->splitter->setSizes(sizes);
 
     QAction* removeAction = new QAction(tr("&Remove"));
@@ -101,7 +105,7 @@ void OrderManagerForm::showContextMenu(const QPoint &pos)
 void OrderManagerForm::cleanInputLineEdit()
 {
     ui->idLineEdit->clear();
-    ui->dateEdit->setDate(QDate(2000,01,01));
+    ui->dateEdit->setDate(QDate::currentDate());
     ui->clientLineEdit->clear();
     ui->productLineEdit->clear();
     ui->quantitySpinBox->clear();
@@ -125,28 +129,58 @@ void OrderManagerForm::on_searchPushButton_clicked()
 
 void OrderManagerForm::on_modifyPushButton_clicked()
 {
-//    QTreeWidgetItem* item = ui->treeWidget->currentItem();
-//    if(item != nullptr) {
-//        int key = item->text(0).toInt();
-//        ClientItem* c = clientList[key];
-//        QString name, number, address;
-//        name = ui->nameLineEdit->text();
-//        number = ui->phoneNumberLineEdit->text();
-//        address = ui->addressLineEdit->text();
+    QTreeWidgetItem* item = ui->treeWidget->currentItem();
+    if(item != nullptr) {
+        int key = item->text(0).toInt();
+        OrderItem* o = orderList[key];
 
-//        if(name.length() && number.length() && address.length()) {
-//            c->setName(name);
-//            c->setPhoneNumber(number);
-//            c->setAddress(address);
-//            clientList[key] = c;
+        QString date, clientName, productName, total;
+        int clientId, productId, oldQuantity, newQuantity;
 
-//            //cleanInputLineEdit();
-//        }
-//        else {
-//            QMessageBox::information(this, tr("Add error"),
-//               QString(tr("Some items have not been entered.")), QMessageBox::Ok);
-//        }
-//    }
+        clientId = ui->clientLineEdit->text().split(" ")[0].toInt();
+        productId = ui->productLineEdit->text().split(" ")[0].toInt();
+        oldQuantity = o->getQuantity();
+        newQuantity = ui->quantitySpinBox->text().toInt();
+        clientName = ui->clientLineEdit->text();
+        productName = ui->productLineEdit->text();
+        date = ui->dateEdit->date().toString("yyyy-MM-dd");
+
+        emit sendClientId(clientId);
+        emit sendProductId(productId);
+
+        try {
+            if(searchedClientFlag == false)
+                throw tr("Customer information does not exist.");
+            else if(searchedProductFlag == false)
+                throw tr("Product information does not exist.");
+            else if(newQuantity == 0)
+                throw tr("Please enter a valid quantity.");
+            else if(searchedProduct->getStock() + oldQuantity < newQuantity)
+                throw tr("There is a shortage of stock.\n") + tr("Maximum: ")
+                    + QString::number(searchedProduct->getStock() + oldQuantity);
+
+            total = QString::number(newQuantity * searchedProduct->getPrice());
+            searchedProduct->setStock(searchedProduct->getStock() + oldQuantity - newQuantity);
+
+            o->setDate(date);
+            o->setClientId(clientId);
+            o->setClientName(clientName);
+            o->setProductId(productId);
+            o->setProductName(productName);
+            o->setQuantity(newQuantity);
+            o->setTotal(total);
+            orderList[key] = o;
+
+            on_treeWidget_itemClicked(item, 0);
+        }
+        catch (QString msg) {
+            QMessageBox::information(this, tr("Add error"),
+                                     QString(msg), QMessageBox::Ok);
+        }
+
+        searchedClientFlag = false;
+        searchedProductFlag = false;
+    }
 }
 
 void OrderManagerForm::on_addPushButton_clicked()
@@ -156,7 +190,7 @@ void OrderManagerForm::on_addPushButton_clicked()
     int clientId, productId, quantity;
 
     clientId = ui->clientLineEdit->text().split(" ")[0].toInt();
-    productId = ui->clientLineEdit->text().split(" ")[0].toInt();
+    productId = ui->productLineEdit->text().split(" ")[0].toInt();
     quantity = ui->quantitySpinBox->text().toInt();
     clientName = ui->clientLineEdit->text();
     productName = ui->productLineEdit->text();
@@ -168,39 +202,67 @@ void OrderManagerForm::on_addPushButton_clicked()
     emit sendClientId(clientId);
     emit sendProductId(productId);
 
-    if( (tmpClient != nullptr) && (tmpProduct != nullptr)) {
+    qDebug() <<"searchedClientFlag: "<<searchedClientFlag;
+    qDebug() <<"searchedProductFlag: "<<searchedProductFlag;
 
-        if( (tmpClient->id() == clientId) && (tmpProduct->id() == productId)
-                && (quantity != 0)) {
-            qDebug()<<"testtt";
-            total = QString::number(quantity * tmpProduct->getPrice());
 
-            OrderItem* c = new OrderItem(id, date, clientId, clientName,
-                                         productId, productName, quantity, total);
-            orderList.insert(id, c);
-            ui->treeWidget->addTopLevelItem(c);
+    try {
+        if(searchedClientFlag == false)
+            throw tr("Customer information does not exist.");
+        else if(searchedProductFlag == false)
+            throw tr("Product information does not exist.");
+        else if(quantity == 0)
+            throw tr("Please enter a valid quantity.");
+        else if(searchedProduct->getStock() < quantity)
+            throw tr("There is a shortage of stock.");
 
-            cleanInputLineEdit();
-        }
-        else{
-            QMessageBox::information(this, tr("Add error"),
-                                     QString(tr("Some items have not been entered.")), QMessageBox::Ok);
-        }
+        total = QString::number(quantity * searchedProduct->getPrice());
+        OrderItem* o = new OrderItem(id, date, clientId, clientName,
+                                     productId, productName, quantity, total);
+        orderList.insert(id, o);
+        ui->treeWidget->addTopLevelItem(o);
 
-    }
-    else{
+        searchedProduct->setStock(searchedProduct->getStock() - quantity);
+
+        cleanInputLineEdit();
+
+    } catch (QString msg) {
         QMessageBox::information(this, tr("Add error"),
-                                 QString(tr("Some items have not been entered.")), QMessageBox::Ok);
+                                 QString(msg), QMessageBox::Ok);
     }
+
+    searchedClientFlag = false;
+    searchedProductFlag = false;
 }
 
 void OrderManagerForm::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
 {
-//    Q_UNUSED(column);
-//    ui->idLineEdit->setText(item->text(0));
-//    ui->nameLineEdit->setText(item->text(1));
-//    ui->phoneNumberLineEdit->setText(item->text(2));
-//    ui->addressLineEdit->setText(item->text(3));
+    Q_UNUSED(column);
+    ui->idLineEdit->setText(item->text(0));
+    ui->dateEdit->setDate(QDate::fromString(item->text(1), "yyyy-MM-dd"));
+    ui->clientLineEdit->setText(item->text(2));
+    ui->productLineEdit->setText(item->text(3));
+    ui->quantitySpinBox->setValue(item->text(4).toInt());
+
+    int clientId = ui->clientLineEdit->text().split(" ")[0].toInt();
+    int productId = ui->productLineEdit->text().split(" ")[0].toInt();
+    emit sendClientId(clientId);
+    emit sendProductId(productId);
+
+    ui->clientTreeWidget->clear();
+    ui->productTreeWidget->clear();
+    if(searchedClientFlag == true) {
+        ClientItem* c = new ClientItem(searchedClient->id(), searchedClient->getName(),
+                                       searchedClient->getPhoneNumber(), searchedClient->getAddress());
+        ui->clientTreeWidget->addTopLevelItem(c);
+    }
+    if(searchedProductFlag == true) {
+        ProductItem* c = new ProductItem(searchedProduct->id(), searchedProduct->getType(),
+                                       searchedProduct->getName(), searchedProduct->getPrice(), searchedProduct->getStock());
+        ui->productTreeWidget->addTopLevelItem(c);
+    }
+    searchedClientFlag = false;
+    searchedProductFlag = false;
 }
 
 
@@ -247,10 +309,12 @@ void OrderManagerForm::on_inputProductPushButton_clicked()
 
 void OrderManagerForm::receiveClientInfo(ClientItem* c)
 {
-    tmpClient = c;
+    searchedClient = c;
+    searchedClientFlag = true;
 }
 
 void OrderManagerForm::receiveProductInfo(ProductItem* p)
 {
-    tmpProduct = p;    
+    searchedProduct = p;
+    searchedProductFlag = true;
 }
