@@ -113,6 +113,7 @@ void OrderManagerForm::cleanInputLineEdit()
 
 void OrderManagerForm::on_searchPushButton_clicked()
 {
+    // 검색기능 고치기
     int i = ui->searchComboBox->currentIndex();
     auto flag = (i)? Qt::MatchCaseSensitive|Qt::MatchContains
                    : Qt::MatchCaseSensitive;

@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    chatmanagerform.cpp \
     clientdialog.cpp \
     clientitem.cpp \
     clientmanagerform.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
     productmanagerform.cpp
 
 HEADERS += \
+    chatmanagerform.h \
     clientdialog.h \
     clientitem.h \
     clientmanagerform.h \
@@ -32,6 +34,7 @@ HEADERS += \
     productmanagerform.h
 
 FORMS += \
+    chatmanagerform.ui \
     clientdialog.ui \
     clientmanagerform.ui \
     mainwindow.ui \

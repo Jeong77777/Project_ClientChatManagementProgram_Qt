@@ -5,6 +5,7 @@
 #include "ordermanagerform.h"
 #include "clientdialog.h"
 #include "productdialog.h"
+#include "chatmanagerform.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -30,6 +31,11 @@ MainWindow::MainWindow(QWidget *parent)
     OrderManagerForm *orderForm = new OrderManagerForm(this, clientDialog, productDialog);
     orderForm->setWindowTitle(tr("Order Info"));
 
+    // chat manager form
+    ChatManagerForm *chatForm = new ChatManagerForm(this);
+    chatForm->setWindowTitle(tr("Chat Info"));
+
+
     connect(clientDialog, SIGNAL(sendWord(QString)), clientForm, SLOT(receiveWord(QString)));
     connect(clientForm, SIGNAL(sendClientToDialog(ClientItem*)), clientDialog, SLOT(receiveClientInfo(ClientItem*)));
     connect(productDialog, SIGNAL(sendWord(QString)), productForm, SLOT(receiveWord(QString)));
@@ -44,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent)
     QMdiSubWindow *cw = ui->mdiArea->addSubWindow(clientForm);
     ui->mdiArea->addSubWindow(productForm);
     ui->mdiArea->addSubWindow(orderForm);
+    ui->mdiArea->addSubWindow(chatForm);
     ui->mdiArea->setActiveSubWindow(cw);
 }
 
