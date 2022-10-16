@@ -7,6 +7,8 @@
 #include "productdialog.h"
 #include "chatmanagerform.h"
 
+#include <QMdiSubWindow>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -24,15 +26,21 @@ MainWindow::MainWindow(QWidget *parent)
     clientForm->setWindowTitle(tr("Client Info"));    
 
     // product manager form
-    ProductManagerForm *productForm = new ProductManagerForm(this);
+    productForm = new ProductManagerForm(this);
+    connect(productForm, SIGNAL(destroyed()),
+            productForm, SLOT(deleteLater()));
     productForm->setWindowTitle(tr("Product Info"));
 
     // order manager form
-    OrderManagerForm *orderForm = new OrderManagerForm(this, clientDialog, productDialog);
+    orderForm = new OrderManagerForm(this, clientDialog, productDialog);
+    connect(orderForm, SIGNAL(destroyed()),
+            orderForm, SLOT(deleteLater()));
     orderForm->setWindowTitle(tr("Order Info"));
 
     // chat manager form
-    ChatManagerForm *chatForm = new ChatManagerForm(this);
+    chatForm = new ChatManagerForm(this);
+    connect(chatForm, SIGNAL(destroyed()),
+            chatForm, SLOT(deleteLater()));
     chatForm->setWindowTitle(tr("Chat Info"));
 
 
@@ -42,9 +50,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(productForm, SIGNAL(sendProductToDialog(ProductItem*)), productDialog, SLOT(receiveProductInfo(ProductItem*)));
 
     connect(orderForm, SIGNAL(sendClientId(int)), clientForm, SLOT(receiveId(int)));
-    connect(clientForm, SIGNAL(sendClientToManager(ClientItem*)), orderForm, SLOT(receiveClientInfo(ClientItem*)));
+    connect(clientForm, SIGNAL(sendClientToOrderManager(ClientItem*)), orderForm, SLOT(receiveClientInfo(ClientItem*)));
     connect(orderForm, SIGNAL(sendProductId(int)), productForm, SLOT(receiveId(int)));
     connect(productForm, SIGNAL(sendProductToManager(ProductItem*)), orderForm, SLOT(receiveProductInfo(ProductItem*)));
+
+    connect(ui->mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow *)), this, SLOT(checkActiveSubWindow(QMdiSubWindow *)));
+    connect(this, SIGNAL(chatFormActivated()), clientForm, SLOT(receiveFromMain()));
+    connect(clientForm, SIGNAL(sendClientToChatManager(ClientItem*)), chatForm, SLOT(updateAllList(ClientItem*)));
 
     // mdi
     QMdiSubWindow *cw = ui->mdiArea->addSubWindow(clientForm);
@@ -64,5 +76,16 @@ void MainWindow::on_actionClient_triggered()
     if(clientForm != nullptr) {
         clientForm->setFocus();
     }
+}
+
+void MainWindow::checkActiveSubWindow(QMdiSubWindow* w)
+{
+    Q_UNUSED(w);
+    if(ui->mdiArea->currentSubWindow()->windowTitle()=="Chat Info") {
+        qDebug("ss");
+        chatForm->clearAllList();
+        emit chatFormActivated();
+    }
+
 }
 

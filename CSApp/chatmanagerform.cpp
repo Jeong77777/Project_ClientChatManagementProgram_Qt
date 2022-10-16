@@ -1,6 +1,7 @@
 #include "chatmanagerform.h"
 #include "ui_chatmanagerform.h"
 #include "chatlogitem.h"
+#include "clientitem.h"
 
 #include <QLabel>
 #include <QPushButton>
@@ -110,4 +111,16 @@ void ChatManagerForm::removeItem()
     QTcpSocket *clientConnection = dynamic_cast<QTcpSocket *>(sender( ));
     clientList.removeOne(clientConnection);
     clientConnection->deleteLater();
+}
+
+void ChatManagerForm::updateAllList(ClientItem* c)
+{
+    ClientItem *item = new ClientItem(c->id(), c->getName(), c->getPhoneNumber(),
+                                      c->getAddress());
+    ui->allClientTreeWidget->addTopLevelItem(item);
+}
+
+void ChatManagerForm::clearAllList()
+{
+    ui->allClientTreeWidget->clear();
 }

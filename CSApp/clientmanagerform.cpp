@@ -214,8 +214,17 @@ void ClientManagerForm::receiveId(int id)
     for (const auto& v : qAsConst(clientList)) {
         ClientItem* c = v;
         if(c->id() == id) {
-            emit sendClientToManager(c);
+            emit sendClientToOrderManager(c);
         }
+    }
+}
+
+void ClientManagerForm::receiveFromMain()
+{
+    qDebug() << "nn";
+    for (const auto& v : qAsConst(clientList)) {
+        ClientItem* c = v;
+        emit sendClientToChatManager(c);
     }
 }
 

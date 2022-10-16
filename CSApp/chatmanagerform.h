@@ -7,6 +7,7 @@
 class QLabel;
 class QTcpServer;
 class QTcpSocket;
+class ClientItem;
 
 typedef struct {
     int type;
@@ -27,10 +28,13 @@ public:
     explicit ChatManagerForm(QWidget *parent = nullptr);
     ~ChatManagerForm();
 
+    void clearAllList();
+
 private slots:
     void clientConnect();
     void echoData();
     void removeItem();
+    void updateAllList(ClientItem*);
 
 private:
     Ui::ChatManagerForm *ui;
