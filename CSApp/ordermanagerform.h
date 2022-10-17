@@ -47,6 +47,8 @@ private slots:
     void receiveClientInfo(ClientItem*);
     void receiveProductInfo(ProductItem*);
 
+    void on_searchComboBox_currentIndexChanged(int index);
+
 signals:
     void sendClientId(int);
     void sendProductId(int);

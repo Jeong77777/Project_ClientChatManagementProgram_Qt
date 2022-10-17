@@ -37,6 +37,8 @@ OrderManagerForm::OrderManagerForm(QWidget *parent, ClientDialog *clientDialog, 
     connect(ui->searchLineEdit, SIGNAL(returnPressed()),
             this, SLOT(on_searchPushButton_clicked()));
 
+    ui->searchDateEdit->hide();
+
     QFile file("orderlist.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
@@ -113,19 +115,30 @@ void OrderManagerForm::cleanInputLineEdit()
 
 void OrderManagerForm::on_searchPushButton_clicked()
 {
-    // 검색기능 고치기
     int i = ui->searchComboBox->currentIndex();
-    auto flag = (i)? Qt::MatchCaseSensitive|Qt::MatchContains
+
+    auto flag = (i >= 2)? Qt::MatchCaseSensitive|Qt::MatchContains
                    : Qt::MatchCaseSensitive;
-    {
-        auto items = ui->treeWidget->findItems(ui->searchLineEdit->text(), flag, i);
 
-        for (const auto& v : qAsConst(orderList))
-            v->setHidden(true);
-
-        foreach(auto i, items)
-            i->setHidden(false);
+    QString str;
+    if(i != 1) {
+        str = str = ui->searchLineEdit->text();
+        if(str == "") {
+            QMessageBox::information(this, tr("Search error"),
+                                     tr("Please enter a search term."), QMessageBox::Ok);
+            return;
+        }
     }
+    else
+        str = ui->searchDateEdit->date().toString("yyyy-MM-dd");
+
+    auto items = ui->treeWidget->findItems(str, flag, i);
+
+    for (const auto& v : qAsConst(orderList))
+        v->setHidden(true);
+
+    foreach(auto i, items)
+        i->setHidden(false);
 }
 
 void OrderManagerForm::on_modifyPushButton_clicked()
@@ -319,3 +332,17 @@ void OrderManagerForm::receiveProductInfo(ProductItem* p)
     searchedProduct = p;
     searchedProductFlag = true;
 }
+
+void OrderManagerForm::on_searchComboBox_currentIndexChanged(int index)
+{
+    if(index == 1) {
+        ui->searchLineEdit->hide();
+        ui->searchDateEdit->show();
+    }
+
+    else {
+        ui->searchDateEdit->hide();
+        ui->searchLineEdit->show();
+    }
+}
+

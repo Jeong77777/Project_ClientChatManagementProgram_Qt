@@ -17,6 +17,9 @@ ProductManagerForm::ProductManagerForm(QWidget *parent) :
     sizes << 200 << 54000;
     ui->splitter->setSizes(sizes);
 
+    ui->priceLineEdit->setValidator( new QIntValidator(0, 999999999, this) );
+    ui->stockLineEdit->setValidator( new QIntValidator(0, 999999999, this) );
+
     QAction* removeAction = new QAction(tr("&Remove"));
     connect(removeAction, SIGNAL(triggered()), SLOT(removeItem()));
 
@@ -106,23 +109,28 @@ void ProductManagerForm::on_searchPushButton_clicked()
     int i = ui->searchComboBox->currentIndex();
 
     auto flag = (i == 2)? Qt::MatchCaseSensitive|Qt::MatchContains
-                   : Qt::MatchCaseSensitive;
+                        : Qt::MatchCaseSensitive;
 
-    {
-        QString str;
-        if(i == 1)
-            str = ui->searchTypeComboBox->currentText();
-        else
-            str = ui->searchLineEdit->text();
-
-        auto items = ui->treeWidget->findItems(str, flag, i);
-
-        for (const auto& v : qAsConst(productList))
-            v->setHidden(true);
-
-        foreach(auto i, items)
-            i->setHidden(false);
+    QString str;
+    if(i == 1)
+        str = ui->searchTypeComboBox->currentText();
+    else {
+        str = ui->searchLineEdit->text();
+        if(str == "") {
+            QMessageBox::information(this, tr("Search error"),
+                                     tr("Please enter a search term."), QMessageBox::Ok);
+            return;
+        }
     }
+
+    auto items = ui->treeWidget->findItems(str, flag, i);
+
+    for (const auto& v : qAsConst(productList))
+        v->setHidden(true);
+
+    foreach(auto i, items)
+        i->setHidden(false);
+
 }
 
 void ProductManagerForm::on_modifyPushButton_clicked()

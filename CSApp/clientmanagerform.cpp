@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QMenu>
 #include <QMessageBox>
+#include <QValidator>
 
 ClientManagerForm::ClientManagerForm(QWidget *parent) :
     QWidget(parent),
@@ -16,6 +17,10 @@ ClientManagerForm::ClientManagerForm(QWidget *parent) :
     //sizes << 200 << 540;
     sizes << 200 << 54000;
     ui->splitter->setSizes(sizes);
+
+    QRegularExpressionValidator* phoneNumberRegExpValidator = new QRegularExpressionValidator(this);
+    phoneNumberRegExpValidator->setRegularExpression(QRegularExpression("^\\d{2,3}-\\d{3,4}-\\d{4}$"));
+    ui->phoneNumberLineEdit->setValidator(phoneNumberRegExpValidator);
 
     QAction* removeAction = new QAction(tr("&Remove"));
     connect(removeAction, SIGNAL(triggered()), SLOT(removeItem()));
@@ -104,15 +109,22 @@ void ClientManagerForm::on_searchPushButton_clicked()
     int i = ui->searchComboBox->currentIndex();
     auto flag = (i)? Qt::MatchCaseSensitive|Qt::MatchContains
                    : Qt::MatchCaseSensitive;
-    {
-        auto items = ui->treeWidget->findItems(ui->searchLineEdit->text(), flag, i);
 
-        for (const auto& v : qAsConst(clientList))
-            v->setHidden(true);
-
-        foreach(auto i, items)
-            i->setHidden(false);
+    QString str = ui->searchLineEdit->text();
+    if(str == "") {
+        QMessageBox::information(this, tr("Search error"),
+                                 tr("Please enter a search term."), QMessageBox::Ok);
+        return;
     }
+
+    auto items = ui->treeWidget->findItems(str, flag, i);
+
+    for (const auto& v : qAsConst(clientList))
+        v->setHidden(true);
+
+    foreach(auto i, items)
+        i->setHidden(false);
+
 }
 
 void ClientManagerForm::on_modifyPushButton_clicked()

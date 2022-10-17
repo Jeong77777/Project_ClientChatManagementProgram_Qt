@@ -22,7 +22,7 @@ ChatManagerForm::ChatManagerForm(QWidget *parent) :
     ui->setupUi(this);
 
     tcpServer = new QTcpServer(this);
-    connect(tcpServer, SIGNAL(newConnection( )), SLOT(clientConnect( )));
+    connect(tcpServer, SIGNAL(newConnection()), SLOT(clientConnect()));
     if (!tcpServer->listen(QHostAddress::Any, 8000)) {
         QMessageBox::critical(this, tr("Echo Server"), \
                               tr("Unable to start the server: %1.") \
@@ -34,7 +34,9 @@ ChatManagerForm::ChatManagerForm(QWidget *parent) :
     ui->stateLineEdit->setText(tr("The server is running on port %1.")
                                .arg(tcpServer->serverPort()));
     ui->portLineEdit->setText(QString::number(tcpServer->serverPort()));
-
+    ui->ipLineEdit->setText(tcpServer->serverAddress().toString());
+    qDebug() << tcpServer->serverAddress().toString();
+    qDebug() <<tcpServer->serverPort();
 
 }
 
@@ -68,25 +70,29 @@ void ChatManagerForm::echoData( )
     chatProtocolType data;
     QDataStream in(&bytearray, QIODevice::ReadOnly);
     in >> data.type;
-    in.readRawData(data.id, 10);
-    in.readRawData(data.data, 1010);
-
-    qDebug() << data.id;
+    in.readRawData(data.data, 1020);
 
     qDebug( ) << data.type;
+
+    QString name, ip;
+    int id;
+
     switch(data.type) {
     case 1:
-        // nonono
+        name = data.data;
+        ip = clientConnection->peerAddress().toString();
+        id = name.toInt();
+        ipidClient[ip] = id;
         break;
     case 2:
-        QString ip = clientConnection->peerAddress().toString();
+        ip = clientConnection->peerAddress().toString();
+        id = ipidClient[ip];
         QString port = QString::number(clientConnection->peerPort());
-        QString id = data.id;
         QString name = "name";
         QString message = data.data;
         QString time = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
 
-        ChatLogItem *log = new ChatLogItem(ip, port, id, name, message, time);
+        ChatLogItem *log = new ChatLogItem(ip, port, QString::number(id), name, message, time);
         ui->chatLogTreeWidget->addTopLevelItem(log);
         break;
     };

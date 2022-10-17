@@ -61,6 +61,11 @@
               </item>
               <item>
                <property name="text">
+                <string>Date</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
                 <string>Client</string>
                </property>
               </item>
@@ -73,6 +78,9 @@
             </item>
             <item>
              <widget class="QLineEdit" name="searchLineEdit"/>
+            </item>
+            <item>
+             <widget class="QDateEdit" name="searchDateEdit"/>
             </item>
            </layout>
           </item>

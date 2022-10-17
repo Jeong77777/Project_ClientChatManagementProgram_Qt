@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QList>
+#include <QHash>
 
 class QLabel;
 class QTcpServer;
@@ -11,9 +12,7 @@ class ClientItem;
 
 typedef struct {
     int type;
-    //id만듬
-    char id[10];
-    char data[1010];
+    char data[1020];
 } chatProtocolType;
 
 namespace Ui {
@@ -41,6 +40,7 @@ private:
 
     QTcpServer *tcpServer;
     QList<QTcpSocket*> clientList;
+    QHash<QString, int> ipidClient;
 };
 
 #endif // CHATMANAGERFORM_H

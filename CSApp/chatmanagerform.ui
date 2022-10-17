@@ -136,7 +136,22 @@
             <widget class="QTreeWidget" name="connectedTreeWidget">
              <column>
               <property name="text">
-               <string notr="true">1</string>
+               <string notr="true">ID</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Name</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Phone Number</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Address</string>
               </property>
              </column>
             </widget>
