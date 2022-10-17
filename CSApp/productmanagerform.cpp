@@ -14,7 +14,7 @@ ProductManagerForm::ProductManagerForm(QWidget *parent) :
 
     QList<int> sizes;
     //sizes << 200 << 540;
-    sizes << 200 << 54000;
+    sizes << 170 << 400;
     ui->splitter->setSizes(sizes);
 
     ui->priceLineEdit->setValidator( new QIntValidator(0, 999999999, this) );

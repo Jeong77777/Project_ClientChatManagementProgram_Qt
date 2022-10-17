@@ -15,7 +15,7 @@ ClientManagerForm::ClientManagerForm(QWidget *parent) :
 
     QList<int> sizes;
     //sizes << 150 << 550;
-    sizes << 200 << 54000;
+    sizes << 170 << 400;
     ui->splitter->setSizes(sizes);
 
     QRegularExpressionValidator* phoneNumberRegExpValidator = new QRegularExpressionValidator(this);

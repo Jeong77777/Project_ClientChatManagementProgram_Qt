@@ -22,7 +22,7 @@ OrderManagerForm::OrderManagerForm(QWidget *parent, ClientDialog *clientDialog, 
 
     QList<int> sizes;
     //sizes << 150 << 550;
-    sizes << 200 << 54000;
+    sizes << 170 << 400;
     ui->splitter->setSizes(sizes);
 
     QAction* removeAction = new QAction(tr("&Remove"));
@@ -51,10 +51,10 @@ void OrderManagerForm::loadData()
         QList<QString> row = line.split(", ");
         if(row.size()) {
             int id = row[0].toInt();
-            OrderItem* c = new OrderItem(id, row[1], row[2].toInt(), row[3],
+            OrderItem* o = new OrderItem(id, row[1], row[2].toInt(), row[3],
                     row[4].toInt(), row[5], row[6].toInt(), row[7]);
-            ui->treeWidget->addTopLevelItem(c);
-            orderList.insert(id, c);
+            ui->treeWidget->addTopLevelItem(o);
+            orderList.insert(id, o);
         }
     }
     file.close( );
