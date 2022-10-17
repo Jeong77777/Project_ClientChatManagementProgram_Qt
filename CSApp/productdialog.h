@@ -4,6 +4,7 @@
 #include <QDialog>
 
 class ProductItem;
+class QTreeWidgetItem;
 
 namespace Ui {
 class ProductDialog;
@@ -17,6 +18,9 @@ public:
     explicit ProductDialog(QWidget *parent = nullptr);
     ~ProductDialog();
 
+    QTreeWidgetItem* getCurrentItem();
+    void clearDialog();
+
 private slots:
     void on_pushButton_clicked();
 
@@ -26,7 +30,7 @@ public slots:
 signals:
     void sendWord(QString);
 
-public:
+private:
     Ui::ProductDialog *ui;
 };
 

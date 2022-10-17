@@ -33,3 +33,14 @@ void ProductDialog::receiveProductInfo(ProductItem * p)
     ui->treeWidget->addTopLevelItem(product);
 }
 
+QTreeWidgetItem* ProductDialog::getCurrentItem()
+{
+    return ui->treeWidget->currentItem();
+}
+
+void ProductDialog::clearDialog()
+{
+    ui->treeWidget->clear();
+    ui->lineEdit->clear();
+}
+

@@ -14,7 +14,7 @@ ClientManagerForm::ClientManagerForm(QWidget *parent) :
     ui->setupUi(this);
 
     QList<int> sizes;
-    //sizes << 200 << 540;
+    //sizes << 150 << 550;
     sizes << 200 << 54000;
     ui->splitter->setSizes(sizes);
 

@@ -28,8 +28,7 @@ public:
 
     void loadData();
 
-    ClientDialog *clientDialog;
-    ProductDialog *productDialog;
+
 
 private slots:
     /* QTreeWidget을 위한 슬롯 */
@@ -56,6 +55,9 @@ signals:
     void sendProductId(int);
 
 private:
+    ClientDialog *clientDialog;
+    ProductDialog *productDialog;
+
     int makeId();
 
     QMap<int, OrderItem*> orderList;

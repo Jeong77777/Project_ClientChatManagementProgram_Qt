@@ -1,12 +1,10 @@
 #include "ordermanagerform.h"
-#include "ui_clientdialog.h"
 #include "ui_ordermanagerform.h"
 #include "orderitem.h"
 #include "clientdialog.h"
 #include "productdialog.h"
 #include "clientitem.h"
 #include "productitem.h"
-#include "ui_productdialog.h"
 
 #include <QFile>
 #include <QMenu>
@@ -23,6 +21,7 @@ OrderManagerForm::OrderManagerForm(QWidget *parent, ClientDialog *clientDialog, 
     cleanInputLineEdit();
 
     QList<int> sizes;
+    //sizes << 150 << 550;
     sizes << 200 << 54000;
     ui->splitter->setSizes(sizes);
 
@@ -301,13 +300,12 @@ void OrderManagerForm::on_inputClientPushButton_clicked()
     clientDialog->show();
 
     if (clientDialog->exec() == QDialog::Accepted) {
-        ClientItem* c = (ClientItem*)clientDialog->ui->treeWidget->currentItem();
+        ClientItem* c = (ClientItem*)clientDialog->getCurrentItem();
         if(c!=nullptr) {
             ui->clientLineEdit->setText(QString::number(c->id()) + " (" + c->getName() + ")");            
         }
     }
-    clientDialog->ui->treeWidget->clear();
-    clientDialog->ui->lineEdit->clear();
+    clientDialog->clearDialog();
 }
 
 void OrderManagerForm::on_inputProductPushButton_clicked()
@@ -315,13 +313,12 @@ void OrderManagerForm::on_inputProductPushButton_clicked()
     qDebug()<<"clicked!!";
     productDialog->show();
     if (productDialog->exec() == QDialog::Accepted) {
-        ProductItem* p = (ProductItem*)productDialog->ui->treeWidget->currentItem();
+        ProductItem* p = (ProductItem*)productDialog->getCurrentItem();
         if(p!=nullptr) {
             ui->productLineEdit->setText(QString::number(p->id()) + " (" + p->getName() + ")");            
         }
     }
-    productDialog->ui->treeWidget->clear();
-    productDialog->ui->lineEdit->clear();
+    productDialog->clearDialog();
 }
 
 void OrderManagerForm::receiveClientInfo(ClientItem* c)

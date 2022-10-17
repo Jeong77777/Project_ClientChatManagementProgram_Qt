@@ -33,3 +33,16 @@ void ClientDialog::receiveClientInfo(ClientItem * c)
     ui->treeWidget->addTopLevelItem(client);
 }
 
+QTreeWidgetItem* ClientDialog::getCurrentItem()
+{
+    return ui->treeWidget->currentItem();
+}
+
+void ClientDialog::clearDialog()
+{
+    ui->treeWidget->clear();
+    ui->lineEdit->clear();
+}
+
+
+

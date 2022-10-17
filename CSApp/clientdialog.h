@@ -4,6 +4,7 @@
 #include <QDialog>
 
 class ClientItem;
+class QTreeWidgetItem;
 
 namespace Ui {
 class ClientDialog;
@@ -17,6 +18,10 @@ public:
     explicit ClientDialog(QWidget *parent = nullptr);
     ~ClientDialog();
 
+    QTreeWidgetItem* getCurrentItem();
+    void clearDialog();
+
+
 private slots:
     void on_pushButton_clicked();
 
@@ -26,7 +31,7 @@ public slots:
 signals:
     void sendWord(QString);
 
-public:
+private:
     Ui::ClientDialog *ui;
 };
 
