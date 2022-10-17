@@ -22,7 +22,7 @@ public:
     void clearDialog();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_searchPushButton_clicked();
 
 public slots:
     void receiveProductInfo(ProductItem *);

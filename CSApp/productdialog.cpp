@@ -12,19 +12,14 @@ ProductDialog::ProductDialog(QWidget *parent) :
     setWindowModality(Qt::ApplicationModal);
 
     connect(ui->lineEdit, SIGNAL(returnPressed()),
-            this, SLOT(on_pushButton_clicked()));
+            this, SLOT(on_searchPushButton_clicked()));
+
+    ui->searchPushButton->setFocus();
 }
 
 ProductDialog::~ProductDialog()
 {
     delete ui;
-}
-
-void ProductDialog::on_pushButton_clicked()
-{
-    ui->treeWidget->clear();
-    emit sendWord(ui->lineEdit->text());
-    qDebug() <<"on_pushButton_clicked";
 }
 
 void ProductDialog::receiveProductInfo(ProductItem * p)
@@ -42,5 +37,12 @@ void ProductDialog::clearDialog()
 {
     ui->treeWidget->clear();
     ui->lineEdit->clear();
+}
+
+
+void ProductDialog::on_searchPushButton_clicked()
+{
+    ui->treeWidget->clear();
+    emit sendWord(ui->lineEdit->text());
 }
 

@@ -23,7 +23,7 @@ public:
 
 
 private slots:
-    void on_pushButton_clicked();
+    void on_searchPushButton_clicked();
 
 public slots:
     void receiveClientInfo(ClientItem *);

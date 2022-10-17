@@ -12,18 +12,14 @@ ClientDialog::ClientDialog(QWidget *parent) :
     setWindowModality(Qt::ApplicationModal);
 
     connect(ui->lineEdit, SIGNAL(returnPressed()),
-            this, SLOT(on_pushButton_clicked()));
+            this, SLOT(on_searchPushButton_clicked()));
+
+    ui->searchPushButton->setFocus();
 }
 
 ClientDialog::~ClientDialog()
 {
     delete ui;
-}
-
-void ClientDialog::on_pushButton_clicked()
-{
-    ui->treeWidget->clear();
-    emit sendWord(ui->lineEdit->text());
 }
 
 void ClientDialog::receiveClientInfo(ClientItem * c)
@@ -42,7 +38,12 @@ void ClientDialog::clearDialog()
 {
     ui->treeWidget->clear();
     ui->lineEdit->clear();
+    ui->searchPushButton->setFocus();
 }
 
-
+void ClientDialog::on_searchPushButton_clicked()
+{
+    ui->treeWidget->clear();
+    emit sendWord(ui->lineEdit->text());
+}
 
