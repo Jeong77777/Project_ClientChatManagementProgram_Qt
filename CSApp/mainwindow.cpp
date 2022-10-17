@@ -64,6 +64,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->mdiArea->addSubWindow(orderForm);
     ui->mdiArea->addSubWindow(chatForm);
     ui->mdiArea->setActiveSubWindow(cw);
+
+    clientForm->loadData();
+    productForm->loadData();
+    orderForm->loadData();
+
 }
 
 MainWindow::~MainWindow()

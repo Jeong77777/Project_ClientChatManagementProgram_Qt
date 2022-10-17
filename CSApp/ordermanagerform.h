@@ -26,6 +26,8 @@ public:
                               ClientDialog *clientDialog = nullptr, ProductDialog *productDialog = nullptr);
     ~OrderManagerForm();
 
+    void loadData();
+
     ClientDialog *clientDialog;
     ProductDialog *productDialog;
 

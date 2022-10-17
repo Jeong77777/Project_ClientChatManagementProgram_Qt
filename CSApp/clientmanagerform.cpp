@@ -32,7 +32,10 @@ ClientManagerForm::ClientManagerForm(QWidget *parent) :
 
     connect(ui->searchLineEdit, SIGNAL(returnPressed()),
             this, SLOT(on_searchPushButton_clicked()));
+}
 
+void ClientManagerForm::loadData()
+{
     QFile file("clientlist.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;

@@ -17,6 +17,7 @@ class ProductManagerForm : public QWidget
 public:
     explicit ProductManagerForm(QWidget *parent = nullptr);
     ~ProductManagerForm();
+    void loadData();
 
 private slots:
     /* QTreeWidget을 위한 슬롯 */

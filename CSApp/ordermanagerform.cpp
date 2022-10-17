@@ -37,8 +37,11 @@ OrderManagerForm::OrderManagerForm(QWidget *parent, ClientDialog *clientDialog, 
     connect(ui->searchLineEdit, SIGNAL(returnPressed()),
             this, SLOT(on_searchPushButton_clicked()));
 
-    ui->searchDateEdit->hide();
+    ui->searchDateEdit->hide();    
+}
 
+void OrderManagerForm::loadData()
+{
     QFile file("orderlist.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;

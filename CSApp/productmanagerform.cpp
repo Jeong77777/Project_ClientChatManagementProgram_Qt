@@ -31,8 +31,11 @@ ProductManagerForm::ProductManagerForm(QWidget *parent) :
     connect(ui->searchLineEdit, SIGNAL(returnPressed()),
             this, SLOT(on_searchPushButton_clicked()));
 
-    ui->searchTypeComboBox->hide();
+    ui->searchTypeComboBox->hide();    
+}
 
+void ProductManagerForm::loadData()
+{
     QFile file("productList.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
