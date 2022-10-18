@@ -49,6 +49,8 @@ void ClientManagerForm::loadData()
             ClientItem* c = new ClientItem(id, row[1], row[2], row[3]);
             ui->treeWidget->addTopLevelItem(c);
             clientList.insert(id, c);
+
+            emit sendClientToChatServer(id, row[1]);
         }
     }
     file.close( );
@@ -170,6 +172,8 @@ void ClientManagerForm::on_addPushButton_clicked()
         ui->treeWidget->addTopLevelItem(c);
 
         cleanInputLineEdit();
+
+        sendClientToChatServer(id, name);
     }
     else {
         QMessageBox::information(this, tr("Add error"),

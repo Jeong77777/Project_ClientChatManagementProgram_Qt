@@ -38,6 +38,7 @@ private slots:
 signals:
     void sendClientToDialog(ClientItem*);
     void sendClientToOrderManager(ClientItem*);
+    void sendClientToChatServer(int, QString);
 
 private:
     int makeId();

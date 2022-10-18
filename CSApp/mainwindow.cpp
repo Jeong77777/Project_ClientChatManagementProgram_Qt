@@ -5,7 +5,7 @@
 #include "ordermanagerform.h"
 #include "clientdialog.h"
 #include "productdialog.h"
-#include "chatmanagerform.h"
+#include "chatserverform.h"
 
 #include <QMdiSubWindow>
 
@@ -38,10 +38,10 @@ MainWindow::MainWindow(QWidget *parent)
     orderForm->setWindowTitle(tr("Order Info"));
 
     // chat manager form
-    chatForm = new ChatManagerForm(this);
+    chatForm = new ChatServerForm(this);
     connect(chatForm, SIGNAL(destroyed()),
             chatForm, SLOT(deleteLater()));
-    chatForm->setWindowTitle(tr("Chat Info"));
+    chatForm->setWindowTitle(tr("Chat server"));
 
 
     connect(clientDialog, SIGNAL(sendWord(QString)), clientForm, SLOT(receiveWord(QString)));
@@ -53,6 +53,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(clientForm, SIGNAL(sendClientToOrderManager(ClientItem*)), orderForm, SLOT(receiveClientInfo(ClientItem*)));
     connect(orderForm, SIGNAL(sendProductId(int)), productForm, SLOT(receiveId(int)));
     connect(productForm, SIGNAL(sendProductToManager(ProductItem*)), orderForm, SLOT(receiveProductInfo(ProductItem*)));
+
+    connect(clientForm, SIGNAL(sendClientToChatServer(int, QString)), chatForm, SLOT(addClient(int,QString)));
 
     // mdi
     QMdiSubWindow *cw = ui->mdiArea->addSubWindow(clientForm);
