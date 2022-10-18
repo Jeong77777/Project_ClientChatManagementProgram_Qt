@@ -137,6 +137,9 @@ void ChatServerForm::receiveData( )
         }
 //        ui->inviteComboBox->addItem(name);
         break;
+
+    default:
+        ;
     }
     //    qDebug() << bytearray;
 }

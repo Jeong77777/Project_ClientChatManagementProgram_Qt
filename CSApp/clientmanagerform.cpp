@@ -173,7 +173,7 @@ void ClientManagerForm::on_addPushButton_clicked()
 
         cleanInputLineEdit();
 
-        sendClientToChatServer(id, name);
+        emit sendClientToChatServer(id, name);
     }
     else {
         QMessageBox::information(this, tr("Add error"),
