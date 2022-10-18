@@ -14,11 +14,6 @@ namespace Ui {
 class ChatServerForm;
 }
 
-typedef struct {
-    int type;
-    char data[1020];
-} chatProtocolType;
-
 typedef enum {
     Chat_Login,
     Chat_In,
@@ -29,6 +24,11 @@ typedef enum {
     Chat_KickOut,
     Chat_FileTransform
 } Chat_Status;
+
+typedef struct {
+    Chat_Status type;
+    char data[1020];
+} chatProtocolType;
 
 class ChatServerForm : public QWidget
 {

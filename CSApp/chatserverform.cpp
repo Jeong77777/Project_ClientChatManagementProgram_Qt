@@ -20,6 +20,11 @@ ChatServerForm::ChatServerForm(QWidget *parent) :
     QList<int> sizes;
     sizes << 120 << 500;
     ui->splitter->setSizes(sizes);
+
+    // 너비설정
+    ui->clientTreeWidget->QTreeView::setColumnWidth(0,20);
+
+
     tcpServer = new QTcpServer(this);
     connect(tcpServer, SIGNAL(newConnection( )), SLOT(clientConnect()));
     if (!tcpServer->listen(QHostAddress::Any, 8000)) {
