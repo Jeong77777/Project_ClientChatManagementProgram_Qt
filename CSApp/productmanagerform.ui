@@ -237,6 +237,10 @@
               <property name="text">
                <string/>
               </property>
+              <property name="icon">
+               <iconset resource="resources.qrc">
+                <normaloff>:/images/erase.png</normaloff>:/images/erase.png</iconset>
+              </property>
              </widget>
             </item>
            </layout>
@@ -299,6 +303,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

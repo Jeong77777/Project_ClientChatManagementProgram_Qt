@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
     clientForm = new ClientManagerForm(this);
     connect(clientForm, SIGNAL(destroyed()),
             clientForm, SLOT(deleteLater()));
-    clientForm->setWindowTitle(tr("Client Info"));    
+    clientForm->setWindowTitle(tr("Client Info"));
 
     // product manager form
     productForm = new ProductManagerForm(this);
