@@ -23,10 +23,6 @@ public:
 
 private slots:
     void on_actionClient_triggered();
-    void checkActiveSubWindow(QMdiSubWindow *);
-
-signals:
-    void chatFormActivated();
 
 private:
     Ui::MainWindow *ui;

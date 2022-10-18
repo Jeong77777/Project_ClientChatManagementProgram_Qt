@@ -34,12 +34,10 @@ private slots:
     void on_cleanPushButton_clicked();
     void receiveWord(QString);
     void receiveId(int);
-    void receiveFromMain();
 
 signals:
     void sendClientToDialog(ClientItem*);
     void sendClientToOrderManager(ClientItem*);
-    void sendClientToChatManager(ClientItem*);
 
 private:
     int makeId();

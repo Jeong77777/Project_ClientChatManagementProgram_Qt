@@ -234,14 +234,4 @@ void ClientManagerForm::receiveId(int id)
     }
 }
 
-void ClientManagerForm::receiveFromMain()
-{
-    qDebug() << "nn";
-    for (const auto& v : qAsConst(clientList)) {
-        ClientItem* c = v;
-        emit sendClientToChatManager(c);
-    }
-}
-
-
 

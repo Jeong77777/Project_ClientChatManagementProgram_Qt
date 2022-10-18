@@ -33,7 +33,6 @@ private slots:
     void clientConnect();
     void echoData();
     void removeItem();
-    void updateAllList(ClientItem*);
 
 private:
     Ui::ChatManagerForm *ui;

@@ -119,13 +119,6 @@ void ChatManagerForm::removeItem()
     clientConnection->deleteLater();
 }
 
-void ChatManagerForm::updateAllList(ClientItem* c)
-{
-    ClientItem *item = new ClientItem(c->id(), c->getName(), c->getPhoneNumber(),
-                                      c->getAddress());
-    ui->allClientTreeWidget->addTopLevelItem(item);
-}
-
 void ChatManagerForm::clearAllList()
 {
     ui->allClientTreeWidget->clear();
