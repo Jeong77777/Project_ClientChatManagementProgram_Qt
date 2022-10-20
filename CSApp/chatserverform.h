@@ -8,27 +8,23 @@
 class QLabel;
 class QTcpServer;
 class QTcpSocket;
-class QMenu;
+class QFile;
+class QProgressDialog;
+class LogThread;
 
 namespace Ui {
 class ChatServerForm;
 }
 
 typedef enum {
-    Chat_Login,
-    Chat_In,
-    Chat_Talk,
-    Chat_Close,
-    Chat_LogOut,
-    Chat_Invite,
-    Chat_KickOut,
-    Chat_FileTransform
+    Chat_Login,             // 로그인(서버 접속)   --> 초대를 위한 정보 저장
+    Chat_In,                // 채팅방 입장
+    Chat_Talk,              // 채팅
+    Chat_Out,               // 채팅방 퇴장         --> 초대 가능
+    Chat_LogOut,            // 로그 아웃(서버 단절) --> 초대 불가능
+    Chat_Invite,            // 초대
+    Chat_KickOut,           // 강퇴
 } Chat_Status;
-
-typedef struct {
-    Chat_Status type;
-    char data[1020];
-} chatProtocolType;
 
 class ChatServerForm : public QWidget
 {
@@ -40,16 +36,29 @@ public:
 
 private:
     const int BLOCK_SIZE = 1024;
+    const int PORT_NUMBER = 8000;
+
     Ui::ChatServerForm *ui;
-    QTcpServer *tcpServer;
+    QTcpServer *chatServer;
+    QTcpServer *fileServer;
     QList<QTcpSocket*> clientList;
     QList<int> clientIDList;
-    QHash<QString, QString> clientNameHash;
+    QHash<quint16, QString> clientNameHash;
+    QHash<QString, QTcpSocket*> clientSocketHash;
     QHash<QString, int> clientIDHash;
     QMenu* menu;
+    QFile* file;
+    QProgressDialog* progressDialog;
+    qint64 totalSize;
+    qint64 byteReceived;
+    QByteArray inBlock;
+    LogThread* logThread;
 
 private slots:
-    void clientConnect( );                       /* 채팅 서버 */
+    void acceptConnection();                /* 파일 서버 */
+    void readClient();
+
+    void clientConnect( );                  /* 채팅 서버 */
     void receiveData( );
     void removeClient( );
     void addClient(int, QString);
