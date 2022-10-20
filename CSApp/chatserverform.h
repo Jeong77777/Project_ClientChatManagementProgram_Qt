@@ -59,6 +59,7 @@ private slots:
     void readClient();
 
     void clientConnect( );                  /* 채팅 서버 */
+    void permitLogIn(QTcpSocket*, const char*);
     void receiveData( );
     void removeClient( );
     void addClient(int, QString);

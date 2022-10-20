@@ -35,6 +35,9 @@
     </property>
     <item>
      <widget class="QMdiArea" name="mdiArea">
+      <property name="contextMenuPolicy">
+       <enum>Qt::DefaultContextMenu</enum>
+      </property>
       <property name="viewMode">
        <enum>QMdiArea::TabbedView</enum>
       </property>

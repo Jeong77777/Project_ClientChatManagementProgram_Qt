@@ -83,8 +83,8 @@ ChatServerForm::~ChatServerForm()
 void ChatServerForm::clientConnect( )
 {
     QTcpSocket *clientConnection = chatServer->nextPendingConnection( );
-    connect(clientConnection, SIGNAL(readyRead( )), SLOT(receiveData( )));
-    connect(clientConnection, SIGNAL(disconnected( )), SLOT(removeClient()));
+    connect(clientConnection, SIGNAL(readyRead()), SLOT(receiveData()));
+    connect(clientConnection, SIGNAL(disconnected()), SLOT(removeClient()));
     qDebug("new connection is established...");
 }
 
@@ -115,8 +115,12 @@ void ChatServerForm::receiveData( )
                 item->setText(0, "-");
                 clientList.append(clientConnection);        // QList<QTcpSocket*> clientList;
                 clientSocketHash[name] = clientConnection;
+                permitLogIn(clientConnection, "permit");
+                return;
             }
         }
+        permitLogIn(clientConnection, "forbid");
+        clientConnection->disconnectFromHost();
         break;
     case Chat_In:
         foreach(auto item, ui->clientTreeWidget->findItems(name, Qt::MatchFixedString, 1)) {
@@ -176,6 +180,8 @@ void ChatServerForm::receiveData( )
             }
         }
         break;
+    default:
+        break;
     }
 }
 
@@ -206,8 +212,8 @@ void ChatServerForm::on_clientTreeWidget_customContextMenuRequested(const QPoint
 {
     foreach(QAction *action, menu->actions()) {
         if(action->objectName() == "Invite")
-            action->setEnabled(ui->clientTreeWidget->currentItem()->text(0) != "O");
-        else
+            action->setEnabled(ui->clientTreeWidget->currentItem()->text(0) == "-");
+        else // Kick out
             action->setEnabled(ui->clientTreeWidget->currentItem()->text(0) == "O");
     }
     QPoint globalPos = ui->clientTreeWidget->mapToGlobal(pos);
@@ -233,6 +239,9 @@ void ChatServerForm::kickOut()
 
 void ChatServerForm::inviteClient()
 {
+    if(ui->clientTreeWidget->currentItem()->text(0) == "X")
+        return;
+
     if(ui->clientTreeWidget->topLevelItemCount()) {
         QString name = ui->clientTreeWidget->currentItem()->text(1);
 
@@ -244,7 +253,7 @@ void ChatServerForm::inviteClient()
 
         sock->write(sendArray);
         foreach(auto item, ui->clientTreeWidget->findItems(name, Qt::MatchFixedString, 1)) {
-            if(item->text(1) != "O") {
+            if(item->text(0) != "O") {
                 item->setText(0, "O");
 //                clientList.append(sock);        // QList<QTcpSocket*> clientList;
             }
@@ -276,8 +285,8 @@ void ChatServerForm::readClient()
         QTreeWidgetItem* item = new QTreeWidgetItem(ui->messageTreeWidget);
         item->setText(0, ip);
         item->setText(1, QString::number(port));
-        item->setText(2, QString::number(clientIDHash[clientNameHash[port]]));
-        item->setText(3, clientNameHash[port]);
+        item->setText(2, QString::number(clientIDHash[clientNameHash[port-1]]));
+        item->setText(3, clientNameHash[port-1]);
         item->setText(4, filename);
         item->setText(5, QDateTime::currentDateTime().toString());
         item->setToolTip(4, filename);
@@ -318,4 +327,13 @@ void ChatServerForm::readClient()
         file->close();
         delete file;
     }
+}
+
+void ChatServerForm::permitLogIn(QTcpSocket* sock, const char* msg)
+{
+    QByteArray sendArray;
+    QDataStream out(&sendArray, QIODevice::WriteOnly);
+    out << Chat_Login;
+    out.writeRawData(msg, 1020);
+    sock->write(sendArray);
 }

@@ -76,12 +76,11 @@ Widget::Widget(QWidget *parent)
     connect(ui->connectButton, &QPushButton::clicked,
             [=]{
         if(ui->connectButton->text() == tr("Log In")) {
+            ui->connectButton->setDisabled(true);
             clientSocket->connectToHost(ui->serverAddress->text( ),
                                         ui->serverPort->text( ).toInt( ));
             clientSocket->waitForConnected();
             sendProtocol(Chat_Login, ui->name->text().toStdString().data());
-            ui->connectButton->setText(tr("Chat in"));
-            ui->name->setReadOnly(true);
         } else if(ui->connectButton->text() == tr("Chat in"))  {
             sendProtocol(Chat_In, ui->name->text().toStdString().data());
             ui->connectButton->setText(tr("Chat Out"));
@@ -133,6 +132,20 @@ void Widget::receiveData( )
     in.readRawData(data, 1020);
 
     switch(type) {
+    case Chat_Login:
+        qDebug() << data;
+        qDebug() << "result: "<<(strcmp(data, "permit"));
+        if(0 == strcmp(data, "permit")) {
+            ui->connectButton->setText(tr("Chat in"));
+            ui->connectButton->setEnabled(true);
+            ui->name->setReadOnly(true);
+        }
+        else {
+            ui->connectButton->setEnabled(true);
+            QMessageBox::critical(this, tr("Chatting Client"), \
+                                  tr("Login failed.\nCustomer information is invalid."));
+        }
+        break;
     case Chat_Talk:
         ui->message->append(QString(data));
         ui->inputLine->setEnabled(true);
@@ -148,7 +161,7 @@ void Widget::receiveData( )
         ui->name->setReadOnly(false);
         break;
     case Chat_Invite:
-        QMessageBox::critical(this, tr("Chatting Client"), \
+        QMessageBox::information(this, tr("Chatting Client"), \
                               tr("Invited from Server"));
         ui->inputLine->setEnabled(true);
         ui->sentButton->setEnabled(true);
@@ -167,7 +180,8 @@ void Widget::disconnect( )
     ui->inputLine->setEnabled(false);
     ui->name->setReadOnly(false);
     ui->sentButton->setEnabled(false);
-    ui->connectButton->setText(tr("Log in"));
+    ui->fileButton->setEnabled(false);
+    ui->connectButton->setText(tr("Log In"));
 }
 
 void Widget::sendProtocol(Chat_Status type, char* data, int size)
