@@ -292,7 +292,7 @@
          </column>
          <column>
           <property name="text">
-           <string>Quntites in stock</string>
+           <string>Quantities in stock</string>
           </property>
          </column>
         </widget>
