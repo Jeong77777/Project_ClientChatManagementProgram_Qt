@@ -57,8 +57,15 @@ Widget::Widget(QWidget *parent)
     connect(ui->fileButton, SIGNAL(clicked()), SLOT(sendFile()));
     ui->fileButton->setDisabled(true);
 
-    // 종료 기능
-    connect(ui->quitButton, SIGNAL(clicked()), qApp, SLOT(quit()));
+    // 로그아웃 기능
+    connect(ui->logOutButton, &QPushButton::clicked, this,
+            [=]{
+        sendProtocol(Chat_LogOut, ui->name->text().toStdString().data());
+        ui->connectButton->setText(tr("Log In"));
+        ui->fileButton->setDisabled(true);
+        ui->sentButton->setDisabled(true);
+        ui->message->clear();
+    } );
 
     /* 채팅을 위한 소켓 */
     clientSocket = new QTcpSocket(this);			// 클라이언트 소켓 생성

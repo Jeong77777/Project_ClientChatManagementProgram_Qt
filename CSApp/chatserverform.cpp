@@ -15,6 +15,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QProgressDialog>
+#include <QNetworkInterface>
 
 ChatServerForm::ChatServerForm(QWidget *parent) :
     QWidget(parent),
@@ -25,16 +26,29 @@ ChatServerForm::ChatServerForm(QWidget *parent) :
     sizes << 120 << 500;
     ui->splitter->setSizes(sizes);
 
+    ui->clientTreeWidget->QTreeView::setColumnWidth(0,70);
+
     chatServer = new QTcpServer(this);
-    connect(chatServer, SIGNAL(newConnection( )), SLOT(clientConnect( )));
+    connect(chatServer, SIGNAL(newConnection()), SLOT(clientConnect()));
     if (!chatServer->listen(QHostAddress::Any, PORT_NUMBER)) {
         QMessageBox::critical(this, tr("Chatting Server"), \
                               tr("Unable to start the server: %1.") \
-                              .arg(chatServer->errorString( )));
+                              .arg(chatServer->errorString()));
         close( );
         return;
     }
+//
+    QList<QHostAddress> addrList = QNetworkInterface::allAddresses();
 
+    foreach(QHostAddress addr, addrList)
+    {
+        if (0 < addr.toIPv4Address())
+        {
+            qDebug() << addr.toString();
+            break;
+        }
+    }
+//
     fileServer = new QTcpServer(this);
     connect(fileServer, SIGNAL(newConnection()), SLOT(acceptConnection()));
     if (!fileServer->listen(QHostAddress::Any, PORT_NUMBER+1)) {
@@ -111,10 +125,12 @@ void ChatServerForm::receiveData( )
     switch(type) {
     case Chat_Login:
         foreach(auto item, ui->clientTreeWidget->findItems(name, Qt::MatchFixedString, 1)) {
-            if(item->text(0) != "-") {
-                item->setText(0, "-");
+            if(item->text(0) != tr("Online")) {
+                item->setText(0, tr("Online"));
+                item->setIcon(0, QIcon(":/images/Blue-Circle.png"));
             }
             clientSocketHash[name] = clientConnection;
+            clientNameHash[port] = name;
             permitLogIn(clientConnection, "permit");
             return;
         }
@@ -123,10 +139,11 @@ void ChatServerForm::receiveData( )
         break;
     case Chat_In:
         foreach(auto item, ui->clientTreeWidget->findItems(name, Qt::MatchFixedString, 1)) {
-            if(item->text(0) != "O") {
-                item->setText(0, "O");
+            if(item->text(0) != tr("Chat in")) {
+                item->setText(0, tr("Chat in"));
+                item->setIcon(0, QIcon(":/images/Green-Circle.png"));
             }
-            clientNameHash[port] = name;
+            //clientNameHash[port] = name;
             if(clientSocketHash.contains(name))
                 clientSocketHash[name] = clientConnection;
         }
@@ -135,16 +152,20 @@ void ChatServerForm::receiveData( )
         foreach(QTcpSocket *sock, clientSocketHash.values()) {
             qDebug() << sock->peerPort();
             if(clientNameHash.contains(sock->peerPort()) && port != sock->peerPort()) {
-                QByteArray sendArray;
-                sendArray.clear();
-                QDataStream out(&sendArray, QIODevice::WriteOnly);
-                out << Chat_Talk;
-                sendArray.append("<font color=lightsteelblue>");
-                sendArray.append(clientNameHash[port].toStdString().data());
-                sendArray.append("</font> : ");
-                sendArray.append(name.toStdString().data());
-                sock->write(sendArray);
-                qDebug() << sock->peerPort();
+                foreach(auto item, ui->clientTreeWidget->findItems(clientNameHash[sock->peerPort()], Qt::MatchFixedString, 1)) {
+                    if(item->text(0) == tr("Chat in")) {
+                        QByteArray sendArray;
+                        sendArray.clear();
+                        QDataStream out(&sendArray, QIODevice::WriteOnly);
+                        out << Chat_Talk;
+                        sendArray.append("<font color=lightsteelblue>");
+                        sendArray.append(clientNameHash[port].toStdString().data());
+                        sendArray.append("</font> : ");
+                        sendArray.append(name.toStdString().data());
+                        sock->write(sendArray);
+                        qDebug() << sock->peerPort();
+                    }
+                }
             }
         }
 
@@ -166,18 +187,21 @@ void ChatServerForm::receiveData( )
         break;
     case Chat_Out:
         foreach(auto item, ui->clientTreeWidget->findItems(name, Qt::MatchContains, 1)) {
-            if(item->text(0) != "-") {
-                item->setText(0, "-");
+            if(item->text(0) != tr("Online")) {
+                item->setText(0, tr("Online"));
+                item->setIcon(0, QIcon(":/images/Blue-Circle.png"));
             }
-            clientNameHash.remove(port);
+            //clientNameHash.remove(port);
         }
         break;
     case Chat_LogOut:
         foreach(auto item, ui->clientTreeWidget->findItems(name, Qt::MatchContains, 1)) {
-            if(item->text(0) != "X") {
-                item->setText(0, "X");
+            if(item->text(0) != tr("Offline")) {
+                item->setText(0, tr("Offline"));
+                item->setIcon(0, QIcon(":/images/Red-Circle.png"));
             }
-            clientSocketHash.remove(name);
+            //clientSocketHash.remove(name);
+            clientNameHash.remove(port);
         }
         break;
     default:
@@ -191,7 +215,8 @@ void ChatServerForm::removeClient()
     if(clientConnection != nullptr) {
         QString name = clientNameHash[clientConnection->peerPort()];
         foreach(auto item, ui->clientTreeWidget->findItems(name, Qt::MatchContains, 1)) {
-            item->setText(0, "X");
+            item->setText(0, tr("Offline"));
+            item->setIcon(0, QIcon(":/images/Red-Circle.png"));
         }
         clientSocketHash.remove(name);
         clientConnection->deleteLater();
@@ -201,20 +226,23 @@ void ChatServerForm::removeClient()
 void ChatServerForm::addClient(int id, QString name)
 {
     QTreeWidgetItem* item = new QTreeWidgetItem(ui->clientTreeWidget);
-    item->setText(0, "X");
+    item->setText(0, tr("Offline"));
+    item->setIcon(0, QIcon(":/images/Red-Circle.png"));
     item->setText(1, name);
     ui->clientTreeWidget->addTopLevelItem(item);
     clientIDHash[name] = id;
-    ui->clientTreeWidget->resizeColumnToContents(0);
+    //ui->clientTreeWidget->resizeColumnToContents(0);
 }
 
 void ChatServerForm::on_clientTreeWidget_customContextMenuRequested(const QPoint &pos)
 {
+    if(ui->clientTreeWidget->currentItem() == nullptr) return;
+
     foreach(QAction *action, menu->actions()) {
         if(action->objectName() == "Invite")        // 초대
-            action->setEnabled(ui->clientTreeWidget->currentItem()->text(0) == "-");
+            action->setEnabled(ui->clientTreeWidget->currentItem()->text(0) == tr("Online"));
         else                                        // 강퇴
-            action->setEnabled(ui->clientTreeWidget->currentItem()->text(0) == "O");
+            action->setEnabled(ui->clientTreeWidget->currentItem()->text(0) == tr("Chat in"));
     }
     QPoint globalPos = ui->clientTreeWidget->mapToGlobal(pos);
     menu->exec(globalPos);
@@ -232,7 +260,8 @@ void ChatServerForm::kickOut()
     QTcpSocket* sock = clientSocketHash[name];
     sock->write(sendArray);
 
-    ui->clientTreeWidget->currentItem()->setText(0, "-");
+    ui->clientTreeWidget->currentItem()->setText(0, tr("Online"));
+    ui->clientTreeWidget->currentItem()->setIcon(0, QIcon(":/images/Blue-Circle.png"));
 }
 
 /* 클라이언트 초대하기 */
@@ -248,7 +277,9 @@ void ChatServerForm::inviteClient()
     QTcpSocket* sock = clientSocketHash[name];
     sock->write(sendArray);
 
-    ui->clientTreeWidget->currentItem()->setText(0, "O");
+
+    ui->clientTreeWidget->currentItem()->setText(0, tr("Chat in"));
+    ui->clientTreeWidget->currentItem()->setIcon(0, QIcon(":/images/Green-Circle.png"));
 }
 
 /* 파일 전송을 위한 소켓 생성 */
