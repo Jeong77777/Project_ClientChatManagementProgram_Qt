@@ -41,11 +41,9 @@ private:
     Ui::ChatServerForm *ui;
     QTcpServer *chatServer;
     QTcpServer *fileServer;
-    QList<QTcpSocket*> clientList;
-    QList<int> clientIDList;
-    QHash<quint16, QString> clientNameHash;
-    QHash<QString, QTcpSocket*> clientSocketHash;
-    QHash<QString, int> clientIDHash;
+    QHash<quint16, QString> clientNameHash; // port, name
+    QHash<QString, QTcpSocket*> clientSocketHash; // name, socket
+    QHash<QString, int> clientIDHash; // name, id
     QMenu* menu;
     QFile* file;
     QProgressDialog* progressDialog;
@@ -54,12 +52,13 @@ private:
     QByteArray inBlock;
     LogThread* logThread;
 
+    void permitLogIn(QTcpSocket*, const char*);
+
 private slots:
     void acceptConnection();                /* 파일 서버 */
     void readClient();
 
     void clientConnect( );                  /* 채팅 서버 */
-    void permitLogIn(QTcpSocket*, const char*);
     void receiveData( );
     void removeClient( );
     void addClient(int, QString);

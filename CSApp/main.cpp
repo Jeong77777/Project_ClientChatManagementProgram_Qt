@@ -6,6 +6,7 @@
 
 int main(int argc, char *argv[])
 {
+    //Q_INIT_RESOURCE(CSApp);
     QApplication a(argc, argv);
 
     QTranslator translator;

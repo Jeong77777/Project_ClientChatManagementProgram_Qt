@@ -11,7 +11,6 @@ class ClientManagerForm;
 class ProductManagerForm;
 class OrderManagerForm;
 class ChatServerForm;
-class QMdiSubWindow;
 
 class MainWindow : public QMainWindow
 {
@@ -20,9 +19,6 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
-private slots:
-    void on_actionClient_triggered();
 
 private:
     Ui::MainWindow *ui;

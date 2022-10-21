@@ -74,10 +74,3 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_actionClient_triggered()
-{
-    if(clientForm != nullptr) {
-        clientForm->setFocus();
-    }
-}
-
