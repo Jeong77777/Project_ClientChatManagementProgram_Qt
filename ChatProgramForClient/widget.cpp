@@ -60,7 +60,7 @@ Widget::Widget(QWidget *parent)
     // 로그아웃 기능
     connect(ui->logOutButton, &QPushButton::clicked, this,
             [=]{
-        sendProtocol(Chat_LogOut, ui->name->text().toStdString().data());
+        sendProtocol(Chat_LogOut, ui->id->text().toStdString().data());
         ui->connectButton->setText(tr("Log In"));
         ui->fileButton->setDisabled(true);
         ui->sentButton->setDisabled(true);
@@ -70,9 +70,9 @@ Widget::Widget(QWidget *parent)
     /* 채팅을 위한 소켓 */
     clientSocket = new QTcpSocket(this);			// 클라이언트 소켓 생성
     connect(clientSocket, &QAbstractSocket::errorOccurred,
-            [=]{ qDebug( ) << clientSocket->errorString( ); });
-    connect(clientSocket, SIGNAL(readyRead( )), SLOT(receiveData( )));
-    connect(clientSocket, SIGNAL(disconnected( )), SLOT(disconnect( )));
+            [=]{ qDebug() << clientSocket->errorString(); });
+    connect(clientSocket, SIGNAL(readyRead()), SLOT(receiveData()));
+    connect(clientSocket, SIGNAL(disconnected()), SLOT(disconnect()));
 
     /* 파일 전송을 위한 소켓 */
     fileClient = new QTcpSocket(this);
@@ -90,15 +90,15 @@ Widget::Widget(QWidget *parent)
             clientSocket->connectToHost(ui->serverAddress->text( ),
                                         ui->serverPort->text( ).toInt( ));
             clientSocket->waitForConnected();
-            sendProtocol(Chat_Login, ui->name->text().toStdString().data());
+            sendProtocol(Chat_Login, ui->id->text().toStdString().data());
         } else if(ui->connectButton->text() == tr("Chat in"))  {
-            sendProtocol(Chat_In, ui->name->text().toStdString().data());
+            sendProtocol(Chat_In, ui->id->text().toStdString().data());
             ui->connectButton->setText(tr("Chat Out"));
             ui->inputLine->setEnabled(true);
             ui->sentButton->setEnabled(true);
             ui->fileButton->setEnabled(true);
         } else if(ui->connectButton->text() == tr("Chat Out"))  {
-            sendProtocol(Chat_Out, ui->name->text().toStdString().data());
+            sendProtocol(Chat_Out, ui->id->text().toStdString().data());
             ui->connectButton->setText(tr("Chat in"));
             ui->inputLine->setDisabled(true);
             ui->sentButton->setDisabled(true);
@@ -121,7 +121,7 @@ Widget::~Widget()
 /* 창이 닫힐 때 서버에 연결 접속 메시지를 보내고 종료 */
 void Widget::closeEvent(QCloseEvent*)
 {
-    sendProtocol(Chat_LogOut, ui->name->text().toStdString().data());
+    sendProtocol(Chat_LogOut, ui->id->text().toStdString().data());
     clientSocket->disconnectFromHost();
     if(clientSocket->state() != QAbstractSocket::UnconnectedState)
         clientSocket->waitForDisconnected();
@@ -150,6 +150,7 @@ void Widget::receiveData( )
         if(0 == strcmp(data, "permit")) {
             ui->connectButton->setText(tr("Chat in"));
             ui->connectButton->setEnabled(true);
+            ui->id->setReadOnly(true);
             ui->name->setReadOnly(true);
         }
         else {
@@ -170,7 +171,8 @@ void Widget::receiveData( )
         ui->inputLine->setDisabled(true);       // 버튼의 상태 변경
         ui->sentButton->setDisabled(true);
         ui->fileButton->setDisabled(true);
-        ui->name->setReadOnly(false);           // 메시지 입력 불가
+        ui->id->setReadOnly(false);           // 메시지 입력 불가
+        ui->name->setReadOnly(false);
         ui->connectButton->setText("Chat in");
         break;
     case Chat_Invite:       // 초대면
@@ -179,7 +181,8 @@ void Widget::receiveData( )
         ui->inputLine->setEnabled(true);
         ui->sentButton->setEnabled(true);
         ui->fileButton->setEnabled(true);
-        ui->name->setReadOnly(true);            // 메시지 입력 가능
+        ui->id->setReadOnly(true);            // 메시지 입력 가능
+        ui->name->setReadOnly(true);
         ui->connectButton->setText("Chat Out");
         break;
     default:
@@ -193,6 +196,7 @@ void Widget::disconnect( )
     QMessageBox::critical(this, tr("Chatting Client"), \
                           tr("Disconnect from Server"));
     ui->inputLine->setEnabled(false);
+    ui->id->setReadOnly(false);
     ui->name->setReadOnly(false);
     ui->sentButton->setEnabled(false);
     ui->fileButton->setEnabled(false);
@@ -269,7 +273,7 @@ void Widget::sendFile() // Open the file and get the file name (including path)
         loadSize = 1024; // The size of data sent each time
 
         QDataStream out(&outBlock, QIODevice::WriteOnly);
-        out << qint64(0) << qint64(0) << filename << ui->name->text();
+        out << qint64(0) << qint64(0) << filename << ui->id->text();
 
         totalSize += outBlock.size(); // The total size is the file size plus the size of the file name and other information
         byteToWrite += outBlock.size();

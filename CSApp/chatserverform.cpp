@@ -27,6 +27,7 @@ ChatServerForm::ChatServerForm(QWidget *parent) :
     ui->splitter->setSizes(sizes);
 
     ui->clientTreeWidget->QTreeView::setColumnWidth(0,70);
+    ui->clientTreeWidget->QTreeView::setColumnWidth(1,50);
 
     chatServer = new QTcpServer(this);
     connect(chatServer, SIGNAL(newConnection()), SLOT(clientConnect()));
@@ -118,50 +119,50 @@ void ChatServerForm::receiveData( )
 
     QString ip = clientConnection->peerAddress().toString();
     quint16 port = clientConnection->peerPort();
-    QString name = QString::fromStdString(data);
+    QString id = QString::fromStdString(data);
 
     qDebug() << ip << " : " << type;
 
     switch(type) {
     case Chat_Login:
-        foreach(auto item, ui->clientTreeWidget->findItems(name, Qt::MatchFixedString, 1)) {
+        foreach(auto item, ui->clientTreeWidget->findItems(id, Qt::MatchFixedString, 1)) {
             if(item->text(0) != tr("Online")) {
                 item->setText(0, tr("Online"));
                 item->setIcon(0, QIcon(":/images/Blue-Circle.png"));
             }
-            clientSocketHash[name] = clientConnection;
-            clientNameHash[port] = name;
+            clientIdSocketHash[id] = clientConnection;
+            portClientIdHash[port] = id;
             permitLogIn(clientConnection, "permit");
             return;
         }
         permitLogIn(clientConnection, "forbid");
-        clientConnection->disconnectFromHost();
+        //clientConnection->disconnectFromHost();
         break;
     case Chat_In:
-        foreach(auto item, ui->clientTreeWidget->findItems(name, Qt::MatchFixedString, 1)) {
+        foreach(auto item, ui->clientTreeWidget->findItems(id, Qt::MatchFixedString, 1)) {
             if(item->text(0) != tr("Chat in")) {
                 item->setText(0, tr("Chat in"));
                 item->setIcon(0, QIcon(":/images/Green-Circle.png"));
             }
-            //clientNameHash[port] = name;
-            if(clientSocketHash.contains(name))
-                clientSocketHash[name] = clientConnection;
+            //portClientIdHash[port] = id;
+            if(clientIdSocketHash.contains(id))
+                clientIdSocketHash[id] = clientConnection;
         }
         break;
     case Chat_Talk: {
-        foreach(QTcpSocket *sock, clientSocketHash.values()) {
+        foreach(QTcpSocket *sock, clientIdSocketHash.values()) {
             qDebug() << sock->peerPort();
-            if(clientNameHash.contains(sock->peerPort()) && port != sock->peerPort()) {
-                foreach(auto item, ui->clientTreeWidget->findItems(clientNameHash[sock->peerPort()], Qt::MatchFixedString, 1)) {
+            if(portClientIdHash.contains(sock->peerPort()) && port != sock->peerPort()) {
+                foreach(auto item, ui->clientTreeWidget->findItems(portClientIdHash[sock->peerPort()], Qt::MatchFixedString, 1)) {
                     if(item->text(0) == tr("Chat in")) {
                         QByteArray sendArray;
                         sendArray.clear();
                         QDataStream out(&sendArray, QIODevice::WriteOnly);
                         out << Chat_Talk;
                         sendArray.append("<font color=lightsteelblue>");
-                        sendArray.append(clientNameHash[port].toStdString().data());
+                        sendArray.append(clientIdNameHash[portClientIdHash[port]].toStdString().data());
                         sendArray.append("</font> : ");
-                        sendArray.append(name.toStdString().data());
+                        sendArray.append(id.toStdString().data());
                         sock->write(sendArray);
                         qDebug() << sock->peerPort();
                     }
@@ -172,8 +173,8 @@ void ChatServerForm::receiveData( )
         QTreeWidgetItem* item = new QTreeWidgetItem(ui->messageTreeWidget);
         item->setText(0, ip);
         item->setText(1, QString::number(port));
-        item->setText(2, QString::number(clientIDHash[clientNameHash[port]]));
-        item->setText(3, clientNameHash[port]);
+        item->setText(2, portClientIdHash[port]);
+        item->setText(3, clientIdNameHash[portClientIdHash[port]]);
         item->setText(4, QString(data));
         item->setText(5, QDateTime::currentDateTime().toString());
         item->setToolTip(4, QString(data));
@@ -186,7 +187,7 @@ void ChatServerForm::receiveData( )
     }
         break;
     case Chat_Out:
-        foreach(auto item, ui->clientTreeWidget->findItems(name, Qt::MatchContains, 1)) {
+        foreach(auto item, ui->clientTreeWidget->findItems(id, Qt::MatchContains, 1)) {
             if(item->text(0) != tr("Online")) {
                 item->setText(0, tr("Online"));
                 item->setIcon(0, QIcon(":/images/Blue-Circle.png"));
@@ -195,13 +196,13 @@ void ChatServerForm::receiveData( )
         }
         break;
     case Chat_LogOut:
-        foreach(auto item, ui->clientTreeWidget->findItems(name, Qt::MatchContains, 1)) {
+        foreach(auto item, ui->clientTreeWidget->findItems(id, Qt::MatchContains, 1)) {
             if(item->text(0) != tr("Offline")) {
                 item->setText(0, tr("Offline"));
                 item->setIcon(0, QIcon(":/images/Red-Circle.png"));
             }
             //clientSocketHash.remove(name);
-            clientNameHash.remove(port);
+            portClientIdHash.remove(port);
         }
         break;
     default:
@@ -213,12 +214,12 @@ void ChatServerForm::removeClient()
 {
     QTcpSocket *clientConnection = dynamic_cast<QTcpSocket *>(sender( ));
     if(clientConnection != nullptr) {
-        QString name = clientNameHash[clientConnection->peerPort()];
-        foreach(auto item, ui->clientTreeWidget->findItems(name, Qt::MatchContains, 1)) {
+        QString id = portClientIdHash[clientConnection->peerPort()];
+        foreach(auto item, ui->clientTreeWidget->findItems(id, Qt::MatchContains, 1)) {
             item->setText(0, tr("Offline"));
             item->setIcon(0, QIcon(":/images/Red-Circle.png"));
         }
-        clientSocketHash.remove(name);
+        clientIdSocketHash.remove(id);
         clientConnection->deleteLater();
     }
 }
@@ -228,9 +229,10 @@ void ChatServerForm::addClient(int id, QString name)
     QTreeWidgetItem* item = new QTreeWidgetItem(ui->clientTreeWidget);
     item->setText(0, tr("Offline"));
     item->setIcon(0, QIcon(":/images/Red-Circle.png"));
-    item->setText(1, name);
+    item->setText(1, QString::number(id));
+    item->setText(2, name);
     ui->clientTreeWidget->addTopLevelItem(item);
-    clientIDHash[name] = id;
+    clientIdNameHash[QString::number(id)] = name;
     //ui->clientTreeWidget->resizeColumnToContents(0);
 }
 
@@ -256,8 +258,8 @@ void ChatServerForm::kickOut()
     out << Chat_KickOut;
     out.writeRawData("", 1020);
 
-    QString name = ui->clientTreeWidget->currentItem()->text(1);
-    QTcpSocket* sock = clientSocketHash[name];
+    QString id = ui->clientTreeWidget->currentItem()->text(1);
+    QTcpSocket* sock = clientIdSocketHash[id];
     sock->write(sendArray);
 
     ui->clientTreeWidget->currentItem()->setText(0, tr("Online"));
@@ -272,9 +274,9 @@ void ChatServerForm::inviteClient()
     out << Chat_Invite;
     out.writeRawData("", 1020);
 
-    /* 소켓은 현재 선택된 아이템에 표시된 이름과 해쉬로 부터 가져온다. */
-    QString name = ui->clientTreeWidget->currentItem()->text(1);
-    QTcpSocket* sock = clientSocketHash[name];
+    /* 소켓은 현재 선택된 아이템에 표시된 ID와 해쉬로 부터 가져온다. */
+    QString id = ui->clientTreeWidget->currentItem()->text(1);
+    QTcpSocket* sock = clientIdSocketHash[id];
     sock->write(sendArray);
 
 
@@ -296,7 +298,7 @@ void ChatServerForm::readClient()
 {
     qDebug("Receiving file ...");
     QTcpSocket* receivedSocket = dynamic_cast<QTcpSocket *>(sender( ));
-    QString filename, name;
+    QString filename, id;
 
     if (byteReceived == 0) {        // 파일 전송 시작 : 파일에 대한 정보를 이용해서 QFile 객체 생성
         progressDialog->reset();
@@ -307,14 +309,14 @@ void ChatServerForm::readClient()
         qDebug() << ip << " : " << port;
 
         QDataStream in(receivedSocket);
-        in >> totalSize >> byteReceived >> filename >> name;
+        in >> totalSize >> byteReceived >> filename >> id;
         progressDialog->setMaximum(totalSize);
 
         QTreeWidgetItem* item = new QTreeWidgetItem(ui->messageTreeWidget);
         item->setText(0, ip);
         item->setText(1, QString::number(port));
-        item->setText(2, QString::number(clientIDHash[name]));
-        item->setText(3, name);
+        item->setText(2, id);
+        item->setText(3, clientIdNameHash[id]);
         item->setText(4, filename);
         item->setText(5, QDateTime::currentDateTime().toString());
         item->setToolTip(4, filename);

@@ -41,9 +41,9 @@ private:
     Ui::ChatServerForm *ui;
     QTcpServer *chatServer;
     QTcpServer *fileServer;
-    QHash<quint16, QString> clientNameHash; // port, name
-    QHash<QString, QTcpSocket*> clientSocketHash; // name, socket
-    QHash<QString, int> clientIDHash; // name, id
+    QHash<quint16, QString> portClientIdHash; // port, id
+    QHash<QString, QTcpSocket*> clientIdSocketHash; // id, socket
+    QHash<QString, QString> clientIdNameHash; // id, name
     QMenu* menu;
     QFile* file;
     QProgressDialog* progressDialog;
