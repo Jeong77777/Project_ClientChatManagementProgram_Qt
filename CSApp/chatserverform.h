@@ -65,6 +65,8 @@ private slots:
     void inviteClient();
     void kickOut();
     void on_clientTreeWidget_customContextMenuRequested(const QPoint &pos);
+
+    void sendData();
 };
 
 #endif // CHATSERVERFORM_H

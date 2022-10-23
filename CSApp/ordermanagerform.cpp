@@ -310,7 +310,6 @@ void OrderManagerForm::on_inputClientPushButton_clicked()
 
 void OrderManagerForm::on_inputProductPushButton_clicked()
 {
-    qDebug()<<"clicked!!";
     productDialog->show();
     if (productDialog->exec() == QDialog::Accepted) {
         ProductItem* p = (ProductItem*)productDialog->getCurrentItem();

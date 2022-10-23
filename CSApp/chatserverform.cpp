@@ -84,6 +84,9 @@ ChatServerForm::ChatServerForm(QWidget *parent) :
     connect(ui->savePushButton, SIGNAL(clicked()), logThread, SLOT(saveData()));
 
     qDebug() << tr("The server is running on port %1.").arg(chatServer->serverPort( ));
+
+    connect(ui->inputLineEdit, SIGNAL(returnPressed()), SLOT(sendData()));
+    connect(ui->inputLineEdit, SIGNAL(returnPressed()), ui->inputLineEdit, SLOT(clear()));
 }
 
 ChatServerForm::~ChatServerForm()
@@ -363,4 +366,9 @@ void ChatServerForm::permitLogIn(QTcpSocket* sock, const char* msg)
     out << Chat_Login;
     out.writeRawData(msg, 1020);
     sock->write(sendArray);
+}
+
+void ChatServerForm::sendData()
+{
+    //
 }
