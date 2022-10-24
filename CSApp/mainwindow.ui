@@ -46,6 +46,9 @@
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -59,30 +62,20 @@
    <addaction name="separator"/>
    <addaction name="actionQuit"/>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>953</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menu_File">
-    <property name="title">
-     <string>&amp;File</string>
-    </property>
-    <addaction name="separator"/>
-    <addaction name="actionQuit"/>
-   </widget>
-   <addaction name="menu_File"/>
-  </widget>
   <action name="actionQuit">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/quit.png</normaloff>:/images/quit.png</iconset>
+   </property>
    <property name="text">
     <string>Quit</string>
    </property>
   </action>
   <action name="actionClient">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/client.png</normaloff>:/images/client.png</iconset>
+   </property>
    <property name="text">
     <string>Client Info</string>
    </property>
@@ -91,31 +84,54 @@
    </property>
   </action>
   <action name="actionProduct">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/product.png</normaloff>:/images/product.png</iconset>
+   </property>
    <property name="text">
     <string>Product Info</string>
    </property>
    <property name="toolTip">
     <string>Product Info</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
    </property>
   </action>
   <action name="actionOrder">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/order.png</normaloff>:/images/order.png</iconset>
+   </property>
    <property name="text">
     <string>Order Info</string>
    </property>
    <property name="toolTip">
     <string>Order Info</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
    </property>
   </action>
   <action name="actionChat">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/chat.png</normaloff>:/images/chat.png</iconset>
+   </property>
    <property name="text">
     <string>Chat Server</string>
    </property>
    <property name="toolTip">
     <string>Chat Server</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+4</string>
+   </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionQuit</sender>

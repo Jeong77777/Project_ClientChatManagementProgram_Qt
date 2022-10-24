@@ -67,7 +67,6 @@ MainWindow::MainWindow(QWidget *parent)
     productForm->loadData();
     orderForm->loadData();
 
-
     ui->statusbar->hide();
 }
 
