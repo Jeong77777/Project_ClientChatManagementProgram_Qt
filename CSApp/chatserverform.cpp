@@ -122,34 +122,38 @@ void ChatServerForm::receiveData( )
 
     QString ip = clientConnection->peerAddress().toString();
     quint16 port = clientConnection->peerPort();
-    QString id = QString::fromStdString(data);
+    QString strData = QString::fromStdString(data);
 
     qDebug() << ip << " : " << type;
 
     switch(type) {
-    case Chat_Login:
-        foreach(auto item, ui->clientTreeWidget->findItems(id, Qt::MatchFixedString, 1)) {
+    case Chat_Login: {
+        QList<QString> row = strData.split(", "); // row[0] = id, row[1] = name
+        foreach(auto item, ui->clientTreeWidget->findItems(row[0], Qt::MatchFixedString, 1)) {
+            if(item->text(2) == row[1]) {
             if(item->text(0) != tr("Online")) {
                 item->setText(0, tr("Online"));
                 item->setIcon(0, QIcon(":/images/Blue-Circle.png"));
             }
-            clientIdSocketHash[id] = clientConnection;
-            portClientIdHash[port] = id;
+            clientIdSocketHash[row[0]] = clientConnection;
+            portClientIdHash[port] = row[0];
             permitLogIn(clientConnection, "permit");
             return;
+            }
         }
         permitLogIn(clientConnection, "forbid");
         //clientConnection->disconnectFromHost();
+    }
         break;
     case Chat_In:
-        foreach(auto item, ui->clientTreeWidget->findItems(id, Qt::MatchFixedString, 1)) {
+        foreach(auto item, ui->clientTreeWidget->findItems(strData, Qt::MatchFixedString, 1)) {
             if(item->text(0) != tr("Chat in")) {
                 item->setText(0, tr("Chat in"));
                 item->setIcon(0, QIcon(":/images/Green-Circle.png"));
             }
             //portClientIdHash[port] = id;
-            if(clientIdSocketHash.contains(id))
-                clientIdSocketHash[id] = clientConnection;
+            if(clientIdSocketHash.contains(strData))
+                clientIdSocketHash[strData] = clientConnection;
         }
         break;
     case Chat_Talk: {
@@ -165,7 +169,7 @@ void ChatServerForm::receiveData( )
                         sendArray.append("<font color=blue>");
                         sendArray.append(clientIdNameHash[portClientIdHash[port]].toStdString().data());
                         sendArray.append("</font> : ");
-                        sendArray.append(id.toStdString().data());
+                        sendArray.append(strData.toStdString().data());
                         sock->write(sendArray);
                         qDebug() << sock->peerPort();
                     }
@@ -175,7 +179,7 @@ void ChatServerForm::receiveData( )
 
         ui->messageTextEdit->append("<font color=blue>" \
                                     + clientIdNameHash[portClientIdHash[port]] \
-                                    + "</font> : " + id);
+                                    + "</font> : " + strData);
 
         QTreeWidgetItem* item = new QTreeWidgetItem(ui->messageTreeWidget);
         item->setText(0, ip);
@@ -194,7 +198,7 @@ void ChatServerForm::receiveData( )
     }
         break;
     case Chat_Out:
-        foreach(auto item, ui->clientTreeWidget->findItems(id, Qt::MatchContains, 1)) {
+        foreach(auto item, ui->clientTreeWidget->findItems(strData, Qt::MatchContains, 1)) {
             if(item->text(0) != tr("Online")) {
                 item->setText(0, tr("Online"));
                 item->setIcon(0, QIcon(":/images/Blue-Circle.png"));
@@ -203,7 +207,7 @@ void ChatServerForm::receiveData( )
         }
         break;
     case Chat_LogOut:
-        foreach(auto item, ui->clientTreeWidget->findItems(id, Qt::MatchContains, 1)) {
+        foreach(auto item, ui->clientTreeWidget->findItems(strData, Qt::MatchContains, 1)) {
             if(item->text(0) != tr("Offline")) {
                 item->setText(0, tr("Offline"));
                 item->setIcon(0, QIcon(":/images/Red-Circle.png"));
@@ -233,6 +237,11 @@ void ChatServerForm::removeClient()
 
 void ChatServerForm::addClient(int id, QString name)
 {
+    foreach(auto v, ui->clientTreeWidget->findItems(QString::number(id), Qt::MatchFixedString, 1)) {
+        v->setText(2, name);
+        clientIdNameHash[QString::number(id)] = name;
+        return;
+    }
     QTreeWidgetItem* item = new QTreeWidgetItem(ui->clientTreeWidget);
     item->setText(0, tr("Offline"));
     item->setIcon(0, QIcon(":/images/Red-Circle.png"));

@@ -150,6 +150,7 @@ void ClientManagerForm::on_modifyPushButton_clicked()
             clientList[key] = c;
 
             //cleanInputLineEdit();
+            emit sendClientToChatServer(c->id(), name);
         }
         else {
             QMessageBox::information(this, tr("Modify error"),

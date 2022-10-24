@@ -90,7 +90,7 @@ Widget::Widget(QWidget *parent)
             clientSocket->connectToHost(ui->serverAddress->text( ),
                                         ui->serverPort->text( ).toInt( ));
             clientSocket->waitForConnected();
-            sendProtocol(Chat_Login, ui->id->text().toStdString().data());
+            sendProtocol(Chat_Login, (ui->id->text() + ", " + ui->name->text()).toStdString().data());
         } else if(ui->connectButton->text() == tr("Chat in"))  {
             sendProtocol(Chat_In, ui->id->text().toStdString().data());
             ui->connectButton->setText(tr("Chat Out"));
