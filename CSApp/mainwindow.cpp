@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(orderForm, SIGNAL(sendProductId(int)), productForm, SLOT(receiveId(int)));
     connect(productForm, SIGNAL(sendProductToManager(ProductItem*)), orderForm, SLOT(receiveProductInfo(ProductItem*)));
 
-    connect(clientForm, SIGNAL(sendClientToChatServer(int, QString)), chatForm, SLOT(addClient(int,QString)));
+    connect(clientForm, SIGNAL(sendClientToChatServer(int, QString)), chatForm, SLOT(addClient(int, QString)));
 
     // mdi
     QMdiSubWindow *cw = ui->mdiArea->addSubWindow(clientForm);
@@ -66,7 +66,6 @@ MainWindow::MainWindow(QWidget *parent)
     clientForm->loadData();
     productForm->loadData();
     orderForm->loadData();
-
 }
 
 MainWindow::~MainWindow()

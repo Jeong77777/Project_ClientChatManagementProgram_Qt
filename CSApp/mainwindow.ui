@@ -47,9 +47,30 @@
       <property name="tabsClosable">
        <bool>false</bool>
       </property>
+      <property name="tabPosition">
+       <enum>QTabWidget::North</enum>
+      </property>
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionClient"/>
+   <addaction name="actionProduct"/>
+   <addaction name="actionOrder"/>
+   <addaction name="actionChat"/>
+   <addaction name="separator"/>
+   <addaction name="actionQuit"/>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -69,21 +90,6 @@
    </widget>
    <addaction name="menu_File"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QToolBar" name="toolBar">
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionClient"/>
-   <addaction name="separator"/>
-   <addaction name="actionQuit"/>
-  </widget>
   <action name="actionQuit">
    <property name="text">
     <string>Quit</string>
@@ -95,6 +101,30 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+1</string>
+   </property>
+  </action>
+  <action name="actionProduct">
+   <property name="text">
+    <string>Product Info</string>
+   </property>
+   <property name="toolTip">
+    <string>Product Info</string>
+   </property>
+  </action>
+  <action name="actionOrder">
+   <property name="text">
+    <string>Order Info</string>
+   </property>
+   <property name="toolTip">
+    <string>Order Info</string>
+   </property>
+  </action>
+  <action name="actionChat">
+   <property name="text">
+    <string>Chat Server</string>
+   </property>
+   <property name="toolTip">
+    <string>Chat Server</string>
    </property>
   </action>
  </widget>
