@@ -224,7 +224,7 @@ void ClientManagerForm::receiveWord(QString word)
 
     for (const auto& v : qAsConst(searchList)) {
         ClientItem* c = v;
-        emit sendClientToDialog((ClientItem*)c);
+        emit sendClientToDialog(c);
     }
 }
 

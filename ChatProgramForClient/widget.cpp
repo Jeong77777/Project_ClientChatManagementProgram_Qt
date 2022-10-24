@@ -223,8 +223,8 @@ void Widget::sendData(  )
     if(str.length( )) {
         QByteArray bytearray;
         bytearray = str.toUtf8( );
-        /* 화면에 표시 : 앞에 '나'라고 추가 */
-        ui->message->append("<font color=red>나</font> : " + str);
+        /* 화면에 표시 : 앞에 'me(나)'라고 추가 */
+        ui->message->append("<font color=red>" + tr("Me") + "</font> : " + str);
         sendProtocol(Chat_Talk, bytearray.data());
     }
 }

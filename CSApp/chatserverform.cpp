@@ -162,7 +162,7 @@ void ChatServerForm::receiveData( )
                         sendArray.clear();
                         QDataStream out(&sendArray, QIODevice::WriteOnly);
                         out << Chat_Talk;
-                        sendArray.append("<font color=lightsteelblue>");
+                        sendArray.append("<font color=blue>");
                         sendArray.append(clientIdNameHash[portClientIdHash[port]].toStdString().data());
                         sendArray.append("</font> : ");
                         sendArray.append(id.toStdString().data());
@@ -172,6 +172,10 @@ void ChatServerForm::receiveData( )
                 }
             }
         }
+
+        ui->messageTextEdit->append("<font color=blue>" \
+                                    + clientIdNameHash[portClientIdHash[port]] \
+                                    + "</font> : " + id);
 
         QTreeWidgetItem* item = new QTreeWidgetItem(ui->messageTreeWidget);
         item->setText(0, ip);
@@ -370,5 +374,42 @@ void ChatServerForm::permitLogIn(QTcpSocket* sock, const char* msg)
 
 void ChatServerForm::sendData()
 {
-    //
+    QString str = ui->inputLineEdit->text( );
+    if(str.length( )) {
+        ui->messageTextEdit->append("<font color=red>" + tr("Admin") + "</font> : " + str);
+
+        /* 클라이언트들한테 보내기 */
+        foreach(QTcpSocket *sock, clientIdSocketHash.values()) {
+            qDebug() << sock->peerPort();
+            foreach(auto item, ui->clientTreeWidget->findItems(portClientIdHash[sock->peerPort()], Qt::MatchFixedString, 1)) {
+                if(item->text(0) == tr("Chat in")) {
+                    QByteArray sendArray;
+                    sendArray.clear();
+                    QDataStream out(&sendArray, QIODevice::WriteOnly);
+                    out << Chat_Talk;
+                    sendArray.append("<font color=blue>");
+                    sendArray.append(tr("Admin").toStdString().data());
+                    sendArray.append("</font> : ");
+                    sendArray.append(str.toStdString().data());
+                    sock->write(sendArray);
+                    qDebug() << sock->peerPort();
+                }
+            }
+        }
+
+        QTreeWidgetItem* item = new QTreeWidgetItem(ui->messageTreeWidget);
+        item->setText(0, chatServer->serverAddress().toString());
+        item->setText(1, QString::number(chatServer->serverPort()));
+        item->setText(2, QString::number(0));
+        item->setText(3, tr("Admin"));
+        item->setText(4, str);
+        item->setText(5, QDateTime::currentDateTime().toString());
+        item->setToolTip(4, str);
+        ui->messageTreeWidget->addTopLevelItem(item);
+
+        for(int i = 0; i < ui->messageTreeWidget->columnCount(); i++)
+            ui->messageTreeWidget->resizeColumnToContents(i);
+
+        logThread->appendData(item);
+    }
 }
