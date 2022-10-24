@@ -20,6 +20,15 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_actionClient_triggered();
+
+    void on_actionProduct_triggered();
+
+    void on_actionOrder_triggered();
+
+    void on_actionChat_triggered();
+
 private:
     Ui::MainWindow *ui;
     ClientManagerForm *clientForm;

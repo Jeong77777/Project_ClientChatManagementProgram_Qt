@@ -34,22 +34,9 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="QMdiArea" name="mdiArea">
-      <property name="contextMenuPolicy">
-       <enum>Qt::DefaultContextMenu</enum>
-      </property>
-      <property name="viewMode">
-       <enum>QMdiArea::TabbedView</enum>
-      </property>
-      <property name="documentMode">
-       <bool>true</bool>
-      </property>
-      <property name="tabsClosable">
-       <bool>false</bool>
-      </property>
-      <property name="tabPosition">
-       <enum>QTabWidget::North</enum>
-      </property>
+     <widget class="QStackedWidget" name="stackedWidget">
+      <widget class="QWidget" name="page_7"/>
+      <widget class="QWidget" name="page_1"/>
      </widget>
     </item>
    </layout>

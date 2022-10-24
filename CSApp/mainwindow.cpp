@@ -7,7 +7,6 @@
 #include "productdialog.h"
 #include "chatserverform.h"
 
-#include <QMdiSubWindow>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -56,20 +55,45 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(clientForm, SIGNAL(sendClientToChatServer(int, QString)), chatForm, SLOT(addClient(int, QString)));
 
-    // mdi
-    QMdiSubWindow *cw = ui->mdiArea->addSubWindow(clientForm);
-    ui->mdiArea->addSubWindow(productForm);
-    ui->mdiArea->addSubWindow(orderForm);
-    ui->mdiArea->addSubWindow(chatForm);
-    ui->mdiArea->setActiveSubWindow(cw);
+    ui->stackedWidget->insertWidget(0, clientForm);
+    ui->stackedWidget->insertWidget(1, productForm);
+    ui->stackedWidget->insertWidget(2, orderForm);
+    ui->stackedWidget->insertWidget(3, chatForm);
+
+    clientForm->showMaximized();
+    ui->stackedWidget->setCurrentIndex(0);
 
     clientForm->loadData();
     productForm->loadData();
     orderForm->loadData();
+
+
+    ui->statusbar->hide();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+
+void MainWindow::on_actionClient_triggered()
+{
+    ui->stackedWidget->setCurrentIndex(0);
+}
+
+void MainWindow::on_actionProduct_triggered()
+{
+    ui->stackedWidget->setCurrentIndex(1);
+}
+
+void MainWindow::on_actionOrder_triggered()
+{
+    ui->stackedWidget->setCurrentIndex(2);
+}
+
+void MainWindow::on_actionChat_triggered()
+{
+    ui->stackedWidget->setCurrentIndex(3);
 }
 
