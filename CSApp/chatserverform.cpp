@@ -87,6 +87,8 @@ ChatServerForm::ChatServerForm(QWidget *parent) :
 
     connect(ui->inputLineEdit, SIGNAL(returnPressed()), SLOT(sendData()));
     connect(ui->inputLineEdit, SIGNAL(returnPressed()), ui->inputLineEdit, SLOT(clear()));
+    connect(ui->sendPushButton, SIGNAL(clicked()), SLOT(sendData()));
+    connect(ui->sendPushButton, SIGNAL(clicked()), ui->inputLineEdit, SLOT(clear()));
 }
 
 ChatServerForm::~ChatServerForm()
@@ -137,13 +139,13 @@ void ChatServerForm::receiveData( )
 
                     clientIdSocketHash[row[0]] = clientConnection;
                     portClientIdHash[port] = row[0];
-                    permitLogIn(clientConnection, "permit");
+                    sendLoginResult(clientConnection, "permit");
                     return;
                 }
 
             }
         }
-        permitLogIn(clientConnection, "forbid");
+        sendLoginResult(clientConnection, "forbid");
         //clientConnection->disconnectFromHost();
     }
         break;
@@ -200,7 +202,7 @@ void ChatServerForm::receiveData( )
     }
         break;
     case Chat_Out:
-        foreach(auto item, ui->clientTreeWidget->findItems(strData, Qt::MatchContains, 1)) {
+        foreach(auto item, ui->clientTreeWidget->findItems(strData, Qt::MatchFixedString, 1)) {
             if(item->text(0) != tr("Online")) {
                 item->setText(0, tr("Online"));
                 item->setIcon(0, QIcon(":/images/Blue-Circle.png"));
@@ -209,12 +211,14 @@ void ChatServerForm::receiveData( )
         }
         break;
     case Chat_LogOut:
-        foreach(auto item, ui->clientTreeWidget->findItems(strData, Qt::MatchContains, 1)) {
+        qDebug()<<"log out....";
+        foreach(auto item, ui->clientTreeWidget->findItems(strData, Qt::MatchFixedString, 1)) {
+            qDebug() <<"loop";
             if(item->text(0) != tr("Offline")) {
                 item->setText(0, tr("Offline"));
                 item->setIcon(0, QIcon(":/images/Red-Circle.png"));
             }
-            //clientSocketHash.remove(name);
+            clientIdSocketHash.remove(portClientIdHash[port]);
             portClientIdHash.remove(port);
         }
         break;
@@ -224,11 +228,12 @@ void ChatServerForm::receiveData( )
 }
 
 void ChatServerForm::removeClient()
-{
+{    
     QTcpSocket *clientConnection = dynamic_cast<QTcpSocket *>(sender( ));
     if(clientConnection != nullptr) {
         QString id = portClientIdHash[clientConnection->peerPort()];
-        foreach(auto item, ui->clientTreeWidget->findItems(id, Qt::MatchContains, 1)) {
+        foreach(auto item, ui->clientTreeWidget->findItems(id, Qt::MatchFixedString, 1)) {
+            qDebug() << item->text(2);
             item->setText(0, tr("Offline"));
             item->setIcon(0, QIcon(":/images/Red-Circle.png"));
         }
@@ -374,7 +379,7 @@ void ChatServerForm::readClient()
     }
 }
 
-void ChatServerForm::permitLogIn(QTcpSocket* sock, const char* msg)
+void ChatServerForm::sendLoginResult(QTcpSocket* sock, const char* msg)
 {
     QByteArray sendArray;
     QDataStream out(&sendArray, QIODevice::WriteOnly);

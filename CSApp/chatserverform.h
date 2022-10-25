@@ -52,7 +52,7 @@ private:
     QByteArray inBlock;
     LogThread* logThread;
 
-    void permitLogIn(QTcpSocket*, const char*);
+    void sendLoginResult(QTcpSocket*, const char*);
 
 private slots:
     void acceptConnection();                /* 파일 서버 */

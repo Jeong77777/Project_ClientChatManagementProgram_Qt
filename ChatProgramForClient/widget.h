@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QDataStream>
+#include <QAbstractSocket>
 
 class QTcpSocket;
 class QFile;
@@ -39,6 +40,7 @@ private slots:
     void sendProtocol(Chat_Status, char*, int = 1020);
     void sendFile();
     void goOnSend(qint64);
+    void connectError(QAbstractSocket::SocketError);
 
 private:
     Ui::Widget *ui;

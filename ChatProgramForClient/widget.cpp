@@ -65,6 +65,8 @@ Widget::Widget(QWidget *parent)
         ui->fileButton->setDisabled(true);
         ui->sentButton->setDisabled(true);
         ui->message->clear();
+        ui->id->setEnabled(true);
+        ui->name->setEnabled(true);
     } );
 
     /* 채팅을 위한 소켓 */
@@ -73,6 +75,8 @@ Widget::Widget(QWidget *parent)
             [=]{ qDebug() << clientSocket->errorString(); });
     connect(clientSocket, SIGNAL(readyRead()), SLOT(receiveData()));
     connect(clientSocket, SIGNAL(disconnected()), SLOT(disconnect()));
+    //내가만든거-에러
+    connect(clientSocket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(connectError(QAbstractSocket::SocketError)));
 
     /* 파일 전송을 위한 소켓 */
     fileClient = new QTcpSocket(this);
@@ -288,4 +292,12 @@ void Widget::sendFile() // Open the file and get the file name (including path)
         progressDialog->show();
     }
     qDebug() << QString("Sending file %1").arg(filename);
+}
+
+void Widget::connectError(QAbstractSocket::SocketError)
+{
+    QMessageBox::critical(this, tr("Chatting Client"), \
+                          tr("Connect error"));
+    ui->connectButton->setEnabled(true);
+    //수정해야함.
 }
