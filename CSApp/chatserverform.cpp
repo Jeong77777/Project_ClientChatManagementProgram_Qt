@@ -131,14 +131,16 @@ void ChatServerForm::receiveData( )
         QList<QString> row = strData.split(", "); // row[0] = id, row[1] = name
         foreach(auto item, ui->clientTreeWidget->findItems(row[0], Qt::MatchFixedString, 1)) {
             if(item->text(2) == row[1]) {
-            if(item->text(0) != tr("Online")) {
-                item->setText(0, tr("Online"));
-                item->setIcon(0, QIcon(":/images/Blue-Circle.png"));
-            }
-            clientIdSocketHash[row[0]] = clientConnection;
-            portClientIdHash[port] = row[0];
-            permitLogIn(clientConnection, "permit");
-            return;
+                if(item->text(0) != tr("Online")) {
+                    item->setText(0, tr("Online"));
+                    item->setIcon(0, QIcon(":/images/Blue-Circle.png"));
+
+                    clientIdSocketHash[row[0]] = clientConnection;
+                    portClientIdHash[port] = row[0];
+                    permitLogIn(clientConnection, "permit");
+                    return;
+                }
+
             }
         }
         permitLogIn(clientConnection, "forbid");
