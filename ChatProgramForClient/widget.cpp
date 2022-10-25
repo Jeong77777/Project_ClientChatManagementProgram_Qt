@@ -65,8 +65,10 @@ Widget::Widget(QWidget *parent)
         ui->fileButton->setDisabled(true);
         ui->sentButton->setDisabled(true);
         ui->message->clear();
-        ui->id->setEnabled(true);
-        ui->name->setEnabled(true);
+        ui->id->setReadOnly(false);
+        ui->name->setReadOnly(false);
+        qDebug() << "enable";
+        ui->activateTreeWidget->clear();
     } );
 
     /* 채팅을 위한 소켓 */
@@ -188,6 +190,17 @@ void Widget::receiveData( )
         ui->id->setReadOnly(true);            // 메시지 입력 가능
         ui->name->setReadOnly(true);
         ui->connectButton->setText("Chat Out");
+        break;
+    case Chat_List: {
+        QList<QString> row = QString(data).split(", ");
+        ui->activateTreeWidget->clear();
+
+        foreach(auto n, row) {
+            QTreeWidgetItem* item = new QTreeWidgetItem(ui->activateTreeWidget);
+            item->setText(0, n);
+            ui->activateTreeWidget->addTopLevelItem(item);
+        }
+    }
         break;
     default:
         break;

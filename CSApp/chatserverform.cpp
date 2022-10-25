@@ -159,6 +159,7 @@ void ChatServerForm::receiveData( )
             if(clientIdSocketHash.contains(strData))
                 clientIdSocketHash[strData] = clientConnection;
         }
+        sendActiveList();
         break;
     case Chat_Talk: {
         foreach(QTcpSocket *sock, clientIdSocketHash.values()) {
@@ -209,6 +210,7 @@ void ChatServerForm::receiveData( )
             }
             //clientNameHash.remove(port);
         }
+        sendActiveList();
         break;
     case Chat_LogOut:
         qDebug()<<"log out....";
@@ -221,6 +223,7 @@ void ChatServerForm::receiveData( )
             clientIdSocketHash.remove(portClientIdHash[port]);
             portClientIdHash.remove(port);
         }
+        sendActiveList();
         break;
     default:
         break;
@@ -287,6 +290,8 @@ void ChatServerForm::kickOut()
 
     ui->clientTreeWidget->currentItem()->setText(0, tr("Online"));
     ui->clientTreeWidget->currentItem()->setIcon(0, QIcon(":/images/Blue-Circle.png"));
+
+    sendActiveList();
 }
 
 /* 클라이언트 초대하기 */
@@ -301,10 +306,12 @@ void ChatServerForm::inviteClient()
     QString id = ui->clientTreeWidget->currentItem()->text(1);
     QTcpSocket* sock = clientIdSocketHash[id];
     sock->write(sendArray);
-
+    while(sock->waitForBytesWritten());
 
     ui->clientTreeWidget->currentItem()->setText(0, tr("Chat in"));
     ui->clientTreeWidget->currentItem()->setIcon(0, QIcon(":/images/Green-Circle.png"));
+
+    sendActiveList();
 }
 
 /* 파일 전송을 위한 소켓 생성 */
@@ -429,3 +436,30 @@ void ChatServerForm::sendData()
         logThread->appendData(item);
     }
 }
+
+void ChatServerForm::sendActiveList()
+{
+    QByteArray sendArray;
+    sendArray.clear();
+    QDataStream out(&sendArray, QIODevice::WriteOnly);
+    out << Chat_List;
+    sendArray.append(tr("Admin").toUtf8());
+
+    foreach(auto item, ui->clientTreeWidget->findItems("Chat in", Qt::MatchFixedString, 0)){
+        sendArray.append(", ");
+        sendArray.append(item->text(2).toUtf8());
+    }
+
+    foreach(QTcpSocket *sock, clientIdSocketHash.values()) {
+        qDebug() << sock->peerPort();
+        foreach(auto item, ui->clientTreeWidget->findItems(portClientIdHash[sock->peerPort()], Qt::MatchFixedString, 1)) {
+            if(item->text(0) == tr("Chat in")) {
+                sock->write(sendArray);
+                while(sock->waitForBytesWritten());
+                qDebug() << sock->peerPort();
+            }
+        }
+    }
+}
+
+
