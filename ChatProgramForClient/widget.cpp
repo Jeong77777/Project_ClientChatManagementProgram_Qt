@@ -67,8 +67,6 @@ Widget::Widget(QWidget *parent)
         ui->message->clear();
         ui->id->setReadOnly(false);
         ui->name->setReadOnly(false);
-        qDebug() << "enable";
-        ui->activateTreeWidget->clear();
     } );
 
     /* 채팅을 위한 소켓 */
@@ -93,6 +91,8 @@ Widget::Widget(QWidget *parent)
             [=]{
         if(ui->connectButton->text() == tr("Log In")) {
             ui->connectButton->setDisabled(true);
+            ui->id->setReadOnly(true);
+            ui->name->setReadOnly(true);
             clientSocket->connectToHost(ui->serverAddress->text( ),
                                         ui->serverPort->text( ).toInt( ));
             clientSocket->waitForConnected();
@@ -155,14 +155,14 @@ void Widget::receiveData( )
         qDebug() << "result: "<<(strcmp(data, "permit"));
         if(0 == strcmp(data, "permit")) {
             ui->connectButton->setText(tr("Chat in"));
-            ui->connectButton->setEnabled(true);
-            ui->id->setReadOnly(true);
-            ui->name->setReadOnly(true);
+            ui->connectButton->setEnabled(true);            
         }
         else {
             ui->connectButton->setEnabled(true);
             QMessageBox::critical(this, tr("Chatting Client"), \
                                   tr("Login failed.\nCustomer information is invalid."));
+            ui->id->setReadOnly(false);
+            ui->name->setReadOnly(false);
         }
         break;
     case Chat_Talk:         // 온 패킷의 타입이 대화이면
@@ -176,9 +176,7 @@ void Widget::receiveData( )
                               tr("Kick out from Server"));
         ui->inputLine->setDisabled(true);       // 버튼의 상태 변경
         ui->sentButton->setDisabled(true);
-        ui->fileButton->setDisabled(true);
-        ui->id->setReadOnly(false);           // 메시지 입력 불가
-        ui->name->setReadOnly(false);
+        ui->fileButton->setDisabled(true); // 메시지 입력 불가
         ui->connectButton->setText("Chat in");
         break;
     case Chat_Invite:       // 초대면
@@ -190,17 +188,6 @@ void Widget::receiveData( )
         ui->id->setReadOnly(true);            // 메시지 입력 가능
         ui->name->setReadOnly(true);
         ui->connectButton->setText("Chat Out");
-        break;
-    case Chat_List: {
-        QList<QString> row = QString(data).split(", ");
-        ui->activateTreeWidget->clear();
-
-        foreach(auto n, row) {
-            QTreeWidgetItem* item = new QTreeWidgetItem(ui->activateTreeWidget);
-            item->setText(0, n);
-            ui->activateTreeWidget->addTopLevelItem(item);
-        }
-    }
         break;
     default:
         break;
@@ -309,8 +296,8 @@ void Widget::sendFile() // Open the file and get the file name (including path)
 
 void Widget::connectError(QAbstractSocket::SocketError)
 {
-    QMessageBox::critical(this, tr("Chatting Client"), \
-                          tr("Connect error"));
-    ui->connectButton->setEnabled(true);
-    //수정해야함.
+//    QMessageBox::critical(this, tr("Chatting Client"), \
+//                          tr("Connect error"));
+//    ui->connectButton->setEnabled(true);
+//    //수정해야함.
 }
