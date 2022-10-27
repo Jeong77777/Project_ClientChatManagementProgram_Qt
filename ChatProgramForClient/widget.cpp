@@ -80,7 +80,7 @@ Widget::Widget(QWidget *parent)
 
     /* 파일 전송을 위한 소켓 */
     fileClient = new QTcpSocket(this);
-    connect(fileClient, SIGNAL(bytesWritten(qint64)), SLOT(goOnSend(qint64)));
+    connect(fileClient, SIGNAL(bytesWritten(qint64)), SLOT(goOnSend(qint64))); // 파일 전송시 여러번 나눠서 전송
     //    connect(fileClient, SIGNAL(disconnected( )), fileClient, SLOT(deletelater( )));
 
     progressDialog = new QProgressDialog(0);
@@ -172,7 +172,7 @@ void Widget::receiveData( )
         ui->fileButton->setEnabled(true);
         break;
     case Chat_KickOut:      // 강퇴면
-        QMessageBox::critical(this, tr("Chatting Client"), \
+        QMessageBox::information(this, tr("Chatting Client"), \
                               tr("Kick out from Server"));
         ui->inputLine->setDisabled(true);       // 버튼의 상태 변경
         ui->sentButton->setDisabled(true);
@@ -180,7 +180,7 @@ void Widget::receiveData( )
         ui->connectButton->setText("Chat in");
         break;
     case Chat_Invite:       // 초대면
-        QMessageBox::critical(this, tr("Chatting Client"), \
+        QMessageBox::information(this, tr("Chatting Client"), \
                               tr("Invited from Server"));
         ui->inputLine->setEnabled(true);
         ui->sentButton->setEnabled(true);
