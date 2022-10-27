@@ -71,7 +71,7 @@ Widget::Widget(QWidget *parent)
 
     /* 채팅을 위한 소켓 */
     clientSocket = new QTcpSocket(this);			// 클라이언트 소켓 생성
-    connect(clientSocket, &QAbstractSocket::errorOccurred,
+    connect(clientSocket, &QAbstractSocket::errorOccurred, this,
             [=]{ qDebug() << clientSocket->errorString(); });
     connect(clientSocket, SIGNAL(readyRead()), SLOT(receiveData()));
     //connect(clientSocket, SIGNAL(disconnected()), SLOT(disconnect()));
@@ -87,7 +87,7 @@ Widget::Widget(QWidget *parent)
     progressDialog->setAutoClose(true);
     progressDialog->reset();
 
-    connect(ui->connectButton, &QPushButton::clicked,
+    connect(ui->connectButton, &QPushButton::clicked, this,
             [=]{
         if(ui->connectButton->text() == tr("Log In")) {
             ui->connectButton->setDisabled(true);
