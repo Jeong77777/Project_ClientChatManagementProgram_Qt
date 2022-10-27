@@ -74,7 +74,7 @@ Widget::Widget(QWidget *parent)
     connect(clientSocket, &QAbstractSocket::errorOccurred,
             [=]{ qDebug() << clientSocket->errorString(); });
     connect(clientSocket, SIGNAL(readyRead()), SLOT(receiveData()));
-    connect(clientSocket, SIGNAL(disconnected()), SLOT(disconnect()));
+    //connect(clientSocket, SIGNAL(disconnected()), SLOT(disconnect()));
     //내가만든거-에러
     connect(clientSocket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(connectError(QAbstractSocket::SocketError)));
 
@@ -158,11 +158,13 @@ void Widget::receiveData( )
             ui->connectButton->setEnabled(true);            
         }
         else {
+            clientSocket->blockSignals(true);
             ui->connectButton->setEnabled(true);
             QMessageBox::critical(this, tr("Chatting Client"), \
                                   tr("Login failed.\nCustomer information is invalid."));
             ui->id->setReadOnly(false);
             ui->name->setReadOnly(false);
+            clientSocket->blockSignals(false);
         }
         break;
     case Chat_Talk:         // 온 패킷의 타입이 대화이면
@@ -294,10 +296,11 @@ void Widget::sendFile() // Open the file and get the file name (including path)
     qDebug() << QString("Sending file %1").arg(filename);
 }
 
-void Widget::connectError(QAbstractSocket::SocketError)
+void Widget::connectError(QAbstractSocket::SocketError i)
 {
-//    QMessageBox::critical(this, tr("Chatting Client"), \
-//                          tr("Connect error"));
-//    ui->connectButton->setEnabled(true);
-//    //수정해야함.
+    //if(QAbstractSocket::ConnectionRefusedError == i)
+        QMessageBox::critical(this, tr("Chatting Client"), \
+                              tr("A Connection error occurred"));
+    ui->connectButton->setEnabled(true);
+    qDebug() << i;
 }

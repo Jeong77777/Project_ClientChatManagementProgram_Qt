@@ -158,7 +158,7 @@ void ChatServerForm::receiveData( )
             }
         }
         sendLoginResult(clientConnection, "forbid");
-        //clientConnection->disconnectFromHost();
+        clientConnection->disconnectFromHost();
     }
         break;
     case Chat_In:

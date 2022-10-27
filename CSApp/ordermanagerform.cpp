@@ -69,7 +69,7 @@ OrderManagerForm::~OrderManagerForm()
             return;
 
         QTextStream out(&file);
-        for (const auto& v : orderList) {
+        for (const auto& v : qAsConst(orderList)) {
             OrderItem* c = v;
             out << c->id() << ", " << c->getDate() << ", ";
             out << c->getClinetId() << ", " << c->getClientName() << ", ";
@@ -93,10 +93,23 @@ void OrderManagerForm::removeItem()
 {
     QTreeWidgetItem* item = ui->treeWidget->currentItem();
     if(item != nullptr) {
+        int productId = item->text(3).split(" ")[0].toInt();
+        emit sendProductId(productId);
+        if(searchedProductFlag == true) {
+            if(QMessageBox::Yes == QMessageBox::information(this, tr("Order list remove"), \
+                                                            tr("Do you want to re-add the deleted inventory?"), \
+                                                            QMessageBox::Yes|QMessageBox::No))
+                searchedProduct->setStock(searchedProduct->getStock() + item->text(4).toInt());
+        }
+        searchedProductFlag = false;
+
         orderList.remove(item->text(0).toInt());
         ui->treeWidget->takeTopLevelItem(ui->treeWidget->indexOfTopLevelItem(item));
-//        delete item;
+//        delete item;       
+
         ui->treeWidget->update();
+        ui->clientTreeWidget->clear();
+        ui->productTreeWidget->clear();
     }
 }
 
