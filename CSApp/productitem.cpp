@@ -1,8 +1,5 @@
 #include "productitem.h"
 
-#include <QLabel>
-//#include <iostream>
-
 using namespace std;
 
 ProductItem::ProductItem(int id, QString type, QString name, int price, int stock)
@@ -28,10 +25,12 @@ QString ProductItem::getName() const
 {
     return text(2);
 }
+
 void ProductItem::setName(QString& name)
 {
     setText(2, name);
 }
+
 int ProductItem::getPrice() const
 {
     return text(3).toInt();
@@ -41,22 +40,18 @@ void ProductItem::setPrice(int price)
 {
     setText(3, QString::number(price));
 }
+
 int ProductItem::getStock() const
 {
     return text(4).toInt();
 }
+
 void ProductItem::setStock(int stock)
 {
     setText(4, QString::number(stock));
 }
+
 int ProductItem::id() const
 {
     return text(0).toInt();
 }
-
-/*
-bool ProductItem::operator==(const ProductItem &other) const
-{
-    return (this->text(1) == other.text(1));
-}
-*/

@@ -3,15 +3,16 @@
 
 #include <QTreeWidgetItem>
 
+/**
+* @brief 주문 정보를 저장하는 tree widget item 클래스
+*/
 class OrderItem : public QTreeWidgetItem
 {
-private:
-    int clientId;
-    int productId;
-
 public:
-    explicit OrderItem(int id = 0, QString date="0000-00-00", int clientId = 0, QString clientName = "",
-                       int productId = 0, QString productName = "", int quantity = 0, QString total = "0");
+    explicit OrderItem(int id = 0, QString date="0000-00-00", \
+                       int clientId = 0, QString clientName = "", \
+                       int productId = 0, QString productName = "", \
+                       int quantity = 0, QString total = "0");
 
     int getClinetId() const;
     void setClientId(int);
@@ -27,9 +28,11 @@ public:
     void setQuantity(int);
     QString getTotal() const;
     void setTotal(QString);
-
     int id() const;
-    //bool operator==(const OrderItem &other) const;
+
+private:
+    int clientId;
+    int productId;
 };
 
 #endif // ORDERITEM_H

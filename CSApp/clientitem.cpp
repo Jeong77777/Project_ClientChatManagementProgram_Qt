@@ -1,8 +1,5 @@
 #include "clientitem.h"
 
-#include <QLabel>
-#include <iostream>
-
 using namespace std;
 
 ClientItem::ClientItem(int id, QString name, QString phoneNumber, QString address)
@@ -30,7 +27,7 @@ QString ClientItem::getPhoneNumber() const
 
 void ClientItem::setPhoneNumber(QString& phoneNumber)
 {
-    setText(2, phoneNumber);    // c_str() --> const char*
+    setText(2, phoneNumber);
 }
 
 QString ClientItem::getAddress() const
@@ -46,9 +43,4 @@ void ClientItem::setAddress(QString& address)
 int ClientItem::id() const
 {
     return text(0).toInt();
-}
-
-// Define copy assignment operator.
-bool ClientItem::operator==(const ClientItem &other) const {
-    return (this->text(1) == other.text(1));
 }

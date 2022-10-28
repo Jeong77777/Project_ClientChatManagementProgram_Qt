@@ -3,10 +3,14 @@
 
 #include <QTreeWidgetItem>
 
+/**
+* @brief 제품 정보를 저장하는 tree widget item 클래스
+*/
 class ProductItem : public QTreeWidgetItem
 {
 public:
-    explicit ProductItem(int id = 0, QString = "", QString = "", int = 0, int = 0);
+    explicit ProductItem(int id = 0, QString = "", \
+                         QString = "", int = 0, int = 0);
 
     QString getType() const;
     void setType(QString&);
@@ -17,7 +21,6 @@ public:
     int getPrice() const;
     void setPrice(int);
     int id() const;
-    //bool operator==(const ProductItem &other) const;
 };
 
 #endif // PRODUCTITEM_H

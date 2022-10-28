@@ -1,12 +1,10 @@
 #include "orderitem.h"
 
-#include <QLabel>
-//#include <iostream>
-
 using namespace std;
 
-OrderItem::OrderItem(int id, QString date, int clientId, QString clientName,
-                     int productId, QString productName, int quantity, QString total)
+OrderItem::OrderItem(int id, QString date, int clientId, \
+                     QString clientName, int productId, \
+                     QString productName, int quantity, QString total)
 {
     this->clientId = clientId;
     this->productId = productId;
@@ -17,7 +15,6 @@ OrderItem::OrderItem(int id, QString date, int clientId, QString clientName,
     setText(3, productName);
     setText(4, QString::number(quantity));
     setText(5, total);
-
 }
 
 QString OrderItem::getDate() const

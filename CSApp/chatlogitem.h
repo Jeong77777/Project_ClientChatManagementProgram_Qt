@@ -3,9 +3,7 @@
 
 #include <QTreeWidgetItem>
 
-/**
-* @brief 고객 정보를 저장하는 tree widget item 클래스
-*/
+
 class ChatLogItem : public QTreeWidgetItem
 {
 public:

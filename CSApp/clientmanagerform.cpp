@@ -16,7 +16,7 @@ ClientManagerForm::ClientManagerForm(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    /* split 사이즈를 정함 */
+    /* split 사이즈 설정 */
     QList<int> sizes;
     sizes << 170 << 400;
     ui->splitter->setSizes(sizes);
@@ -29,9 +29,10 @@ ClientManagerForm::ClientManagerForm(QWidget *parent) :
     ui->phoneNumberLineEdit->setValidator(phoneNumberRegExpValidator);
 
     /* tree widget의 context 메뉴 설정 */
+    // tree widget에서 고객을 삭제하는 action
     QAction* removeAction = new QAction(tr("&Remove"));
     connect(removeAction, SIGNAL(triggered()), SLOT(removeItem()));
-    menu = new QMenu;
+    menu = new QMenu; // context 메뉴
     menu->addAction(removeAction);
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)),\
@@ -52,7 +53,7 @@ void ClientManagerForm::loadData()
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
-    /* parcing 후 고객 정보를 tree widget에 추가 */
+    /* parsing 후 고객 정보를 tree widget에 추가 */
     QTextStream in(&file);
     while (!in.atEnd()) {
         QString line = in.readLine();
@@ -113,7 +114,7 @@ void ClientManagerForm::on_searchPushButton_clicked()
     QString str = ui->searchLineEdit->text();
     if(!str.length()) { // 검색 창이 비어 있을 때
         QMessageBox::warning(this, tr("Search error"),
-                                 tr("Please enter a search term."), QMessageBox::Ok);
+                             tr("Please enter a search term."), QMessageBox::Ok);
         return;
     }
 
@@ -121,13 +122,14 @@ void ClientManagerForm::on_searchPushButton_clicked()
     // 0. ID  1. 이름  2. 전화번호  3. 주소
     int i = ui->searchComboBox->currentIndex();
 
-    // 123: 대소문자 구분, 부분 일치 검색, 0: 대소문자 구분 검색
+    // 1 2 3: 대소문자 구분, 부분 일치 검색, 0: 대소문자 구분 검색
     auto flag = (i)? Qt::MatchCaseSensitive|Qt::MatchContains
                    : Qt::MatchCaseSensitive;
 
+    // 검색
     auto items = ui->treeWidget->findItems(str, flag, i);
 
-    /* 검색된 결과만 tree widget에 보여 주기*/
+    /* 검색된 결과만 tree widget에 보여 주기 */
     for (const auto& v : qAsConst(clientList))
         v->setHidden(true);
     foreach(auto i, items)
@@ -142,7 +144,7 @@ void ClientManagerForm::on_addPushButton_clicked()
 {
     /* 입력 창에 입력된 정보 가져오기 */
     QString name, number, address;
-    int id = makeId( ); // 자동으로 ID 생성
+    int id = makeId(); // 자동으로 ID 생성
     name = ui->nameLineEdit->text();
     number = ui->phoneNumberLineEdit->text();
     address = ui->addressLineEdit->text();
@@ -150,8 +152,8 @@ void ClientManagerForm::on_addPushButton_clicked()
     /* 입력된 정보로 tree widget item을 생성하고 tree widget에 추가 */
     if(name.length() && number.length() && address.length()) {
         ClientItem* c = new ClientItem(id, name, number, address);
-        clientList.insert(id, c);
-        ui->treeWidget->addTopLevelItem(c);
+        clientList.insert(id, c);           // 고객 리스트에 추가
+        ui->treeWidget->addTopLevelItem(c); // tree widget에 추가
 
         cleanInputLineEdit(); // 입력 창 클리어
 
@@ -160,8 +162,8 @@ void ClientManagerForm::on_addPushButton_clicked()
     }
     else { // 비어있는 입력 창이 있을 때
         QMessageBox::warning(this, tr("Add error"),
-                                 QString(tr("Some items have not been entered.")),\
-                                 QMessageBox::Ok);
+                             QString(tr("Some items have not been entered.")),\
+                             QMessageBox::Ok);
     }
 }
 
@@ -197,8 +199,8 @@ void ClientManagerForm::on_modifyPushButton_clicked()
         }
         else { // 비어있는 입력 창이 있을 때
             QMessageBox::warning(this, tr("Modify error"),\
-                                     QString(tr("Some items have not been entered.")),\
-                                     QMessageBox::Ok);
+                                 QString(tr("Some items have not been entered.")),\
+                                 QMessageBox::Ok);
         }
     }
 }
@@ -211,53 +213,116 @@ void ClientManagerForm::on_cleanPushButton_clicked()
     cleanInputLineEdit();
 }
 
-// 여기서부터 달기
+/**
+* @brief tree widget에서 제품을 클릭(선택)했을 때 실행되는 슬롯, 클릭된 제품의 정보를 입력 창에 표시
+* @Param QTreeWidgetItem *item 클릭된 item
+* @Param int column 클릭된 item의 열
+*/
 void ClientManagerForm::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
 {
     Q_UNUSED(column);
+
+    /* 클릭된 고객의 정보를 입력 창에 표시해줌 */
     ui->idLineEdit->setText(item->text(0));
     ui->nameLineEdit->setText(item->text(1));
     ui->phoneNumberLineEdit->setText(item->text(2));
     ui->addressLineEdit->setText(item->text(3));
 }
 
-
+/**
+* @brief tree widget의 context 메뉴 출력
+* @param const QPoint &pos 우클릭한 위치
+*/
 void ClientManagerForm::showContextMenu(const QPoint &pos)
 {
+    /* tree widget 위에서 우클릭한 위치에서 context menu 출력 */
     QPoint globalPos = ui->treeWidget->mapToGlobal(pos);
     menu->exec(globalPos);
 }
 
+/**
+* @brief 고객 정보 삭제
+*/
+void ClientManagerForm::removeItem()
+{
+    /* tree widget에서 현재 선택된 item 가져오기 */
+    QTreeWidgetItem* item = ui->treeWidget->currentItem();
 
+    /* 고객 정보 삭제 */
+    if(item != nullptr) {
+        clientList.remove(item->text(0).toInt()); // 리스트에서 고객 정보 삭제
+        // tree widget에서 고객 정보 삭제
+        ui->treeWidget->takeTopLevelItem(ui->treeWidget->indexOfTopLevelItem(item));
+        delete item;
+        ui->treeWidget->update(); // tree widget update
+    }
+}
 
+/**
+* @brief 주문 정보 관리 객체에서 고객ID를 가지고 고객을 검색 하기 위한 슬롯
+* @Param int id 검색할 고객 id
+*/
+void ClientManagerForm::receiveId(int id)
+{
+    for (const auto& v : qAsConst(clientList)) {
+        ClientItem* c = v;
+        if(c->id() == id) {
+            // 검색 결과를 주문 정보 관리 객체로 보냄
+            emit sendClientToOrderManager(c);
+        }
+    }
+}
 
+/**
+* @brief 고객 검색 Dialog에서 고객을 검색 하기 위한 슬롯
+* @Param QString word 검색어(id 또는 이름)
+*/
+void ClientManagerForm::receiveWord(QString word)
+{
+    /* 검색 결과를 저장할 map */
+    QMap<int, ClientItem*> searchList;
+
+    /* 대소문자를 구분하고 부분 일치 검색으로 설정 */
+    auto flag = Qt::MatchCaseSensitive|Qt::MatchContains;
+
+    /* id에서 검색 */
+    auto items1 = ui->treeWidget->findItems(word, flag, 0);
+    foreach(auto i, items1) {
+        ClientItem* c = static_cast<ClientItem*>(i);
+        searchList.insert(c->id(), c); // 검색 결과를 map에 저장
+    }
+
+    /* 이름에서 검색 */
+    auto items2 = ui->treeWidget->findItems(word, flag, 1);
+    foreach(auto i, items2) {
+        ClientItem* c = static_cast<ClientItem*>(i);
+        searchList.insert(c->id(), c); // 검색 결과를 map에 저장
+    }
+
+    /* 검색 결과를 고객 검색 Dialog로 보냄 */
+    for (const auto& v : qAsConst(searchList)) {
+        ClientItem* c = v;
+        emit sendClientToDialog(c);
+    }
+}
 
 /**
 * @brief 신규 고객 추가 시 ID를 자동으로 생성
+* @return int 새로운 id 반환
 */
-int ClientManagerForm::makeId( )
+int ClientManagerForm::makeId()
 {
     if(clientList.size( ) == 0) {
-        return 10001;
+        return 10001; // id는 10001부터 시작
     } else {
         auto id = clientList.lastKey();
-        return ++id;
+        return ++id; // 기존의 제일 큰 id보다 1만큼 큰 숫자를 반환
     }
 }
 
-void ClientManagerForm::removeItem()
-{
-    QTreeWidgetItem* item = ui->treeWidget->currentItem();
-    if(item != nullptr) {
-        clientList.remove(item->text(0).toInt());
-        ui->treeWidget->takeTopLevelItem(ui->treeWidget->indexOfTopLevelItem(item));
-        //        delete item;
-        ui->treeWidget->update();
-    }
-}
-
-
-
+/**
+* @brief 입력 창 클리어
+*/
 void ClientManagerForm::cleanInputLineEdit()
 {
     ui->idLineEdit->clear();
@@ -265,52 +330,3 @@ void ClientManagerForm::cleanInputLineEdit()
     ui->phoneNumberLineEdit->clear();
     ui->addressLineEdit->clear();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void ClientManagerForm::receiveWord(QString word)
-{
-    QMap<int, ClientItem*> searchList;
-
-    auto flag = Qt::MatchCaseSensitive|Qt::MatchContains;
-
-    auto items1 = ui->treeWidget->findItems(word, flag, 0);
-    foreach(auto i, items1) {
-        ClientItem* c = static_cast<ClientItem*>(i);
-        searchList.insert(c->id(), c);
-    }
-
-    auto items2 = ui->treeWidget->findItems(word, flag, 1);
-    foreach(auto i, items2) {
-        ClientItem* c = static_cast<ClientItem*>(i);
-        searchList.insert(c->id(), c);
-    }
-
-    for (const auto& v : qAsConst(searchList)) {
-        ClientItem* c = v;
-        emit sendClientToDialog(c);
-    }
-}
-
-void ClientManagerForm::receiveId(int id)
-{
-    for (const auto& v : qAsConst(clientList)) {
-        ClientItem* c = v;
-        if(c->id() == id) {
-            emit sendClientToOrderManager(c);
-        }
-    }
-}
-
-

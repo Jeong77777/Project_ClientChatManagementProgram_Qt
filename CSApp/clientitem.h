@@ -3,6 +3,9 @@
 
 #include <QTreeWidgetItem>
 
+/**
+* @brief 고객 정보를 저장하는 tree widget item 클래스
+*/
 class ClientItem : public QTreeWidgetItem
 {
 public:
@@ -15,7 +18,6 @@ public:
     QString getAddress() const;
     void setAddress(QString&);
     int id() const;
-    bool operator==(const ClientItem &other) const;
 };
 
 #endif // CLIENTITEM_H
