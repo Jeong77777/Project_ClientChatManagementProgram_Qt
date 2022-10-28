@@ -74,9 +74,9 @@ Widget::Widget(QWidget *parent)
     connect(clientSocket, &QAbstractSocket::errorOccurred, this,
             [=]{ qDebug() << clientSocket->errorString(); });
     connect(clientSocket, SIGNAL(readyRead()), SLOT(receiveData()));
-    //connect(clientSocket, SIGNAL(disconnected()), SLOT(disconnect()));
+    connect(clientSocket, SIGNAL(disconnected()), SLOT(disconnect()));
     //내가만든거-에러
-    connect(clientSocket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(connectError(QAbstractSocket::SocketError)));
+    //connect(clientSocket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(connectError(QAbstractSocket::SocketError)));
 
     /* 파일 전송을 위한 소켓 */
     fileClient = new QTcpSocket(this);

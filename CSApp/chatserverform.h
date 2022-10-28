@@ -5,6 +5,7 @@
 #include <QList>
 #include <QHash>
 
+class QMenu;
 class QLabel;
 class QTcpServer;
 class QTcpSocket;
@@ -18,13 +19,13 @@ class ChatServerForm;
 }
 
 typedef enum {
-    Chat_Login,             // 로그인(서버 접속)   --> 초대를 위한 정보 저장
-    Chat_In,                // 채팅방 입장
-    Chat_Talk,              // 채팅
-    Chat_Out,               // 채팅방 퇴장         --> 초대 가능
-    Chat_LogOut,            // 로그 아웃(서버 단절) --> 초대 불가능
-    Chat_Invite,            // 초대
-    Chat_KickOut,           // 강퇴
+    Chat_Login,    // 로그인(connect)
+    Chat_In,       // 채팅 참여
+    Chat_Talk,     // 채팅
+    Chat_Out,      // 채팅 나가기
+    Chat_LogOut,   // 로그 아웃(disconnect)
+    Chat_Invite,   // 초대
+    Chat_KickOut,  // 강퇴
 } Chat_Status;
 
 class ChatServerForm : public QWidget
@@ -35,47 +36,60 @@ public:
     explicit ChatServerForm(QWidget *parent = nullptr);
     ~ChatServerForm();
 
-private:
-    const int BLOCK_SIZE = 1024;
-    const int PORT_NUMBER = 8000;
-
-    Ui::ChatServerForm *ui;
-    QTcpServer *chatServer;
-    QTcpServer *fileServer;
-    QHash<quint16, QString> portClientIdHash; // port, id
-    QHash<QString, QTcpSocket*> clientIdSocketHash; // id, socket
-    QHash<QString, QString> clientIdNameHash; // id, name
-    QHash<QString, ChatWindowForAdmin*> clientIdWindowHash; // id, chat window
-    QMenu* menu;
-    QFile* file;
-    QProgressDialog* progressDialog;
-    qint64 totalSize;
-    qint64 byteReceived;
-    QByteArray inBlock;
-    LogThread* logThread;
-
-    void sendLoginResult(QTcpSocket*, const char*);
-
-
 private slots:
-    void acceptConnection();                /* 파일 서버 */
-    void readClient();
-
-    void clientConnect( );                  /* 채팅 서버 */
-    void receiveData( );
-    void removeClient( );
+    // 고객 정보 관리 객체로부터 받은 고객 정보를 리스트에 추가(변경)하는 슬롯
     void addClient(int, QString);
-    void openChatWindow();
-    void inviteClient();
-    void inviteClienttInChatWindow(QString);
-    void kickOut();
-    void kickOutInChatWindow(QString);
-    void on_clientTreeWidget_customContextMenuRequested(const QPoint &pos);
 
+    /* 파일 서버 */
+    void acceptConnection(); // 새로운 연결을 위한 슬롯
+    void readClient();       // 파일을 수신하는 슬롯
+
+    /* 채팅 서버 */
+    void clientConnect( ); // 새로운 연결을 위한 슬롯
+    void receiveData( );   // 데이터(메시지)를 받는 슬롯
+    void removeClient( );  // 연결을 끊겼을 때의 슬롯
+    void openChatWindow(); // 관리자 채팅창을 여는 슬롯
+    void inviteClient();   // 고객을 채팅방에 초대하는 슬롯
+    // 관리자 채팅창에서 고객을 채팅방에 초대하는 슬롯
+    void inviteClientInChatWindow(QString);
+    void kickOut();        // 고객을 채팅방으로부터 강퇴하는 슬롯
+    // 관리자 채팅창에서 고객을 채팅방으로부터 강퇴하는 슬롯
+    void kickOutInChatWindow(QString);
+    // 관리자가 고객에게 채팅을 전송하기 위한 슬롯
     void sendData(QString, QString);
 
-signals:
-    void sendMessageToChatWindow(QString);
+    // 고객 리스트 tree widget 위에서 우클릭한 위치에서 context menu 출력
+    void on_clientTreeWidget_customContextMenuRequested(const QPoint &pos);
+
+private:
+    const int BLOCK_SIZE = 1024;  // 블록 사이즈
+    const int PORT_NUMBER = 8000; // 채팅을 위한 port number
+
+    // 고객 채팅방으로 로그인 결과를 전송
+    void sendLoginResult(QTcpSocket*, const char*);
+
+    Ui::ChatServerForm *ui; // ui
+    QTcpServer *chatServer; // 채팅을 위한 서버
+    QTcpServer *fileServer; // 파일 수신을 위한 서버
+
+    // <port, id>를 저장하는 hash
+    QHash<quint16, QString> portClientIdHash;
+    // <id, socket>을 저장하는 hash
+    QHash<QString, QTcpSocket*> clientIdSocketHash;
+    // <id, name>을 저장하는 hash
+    QHash<QString, QString> clientIdNameHash;
+    // <id, chat window>을 저장하는 hash
+    QHash<QString, ChatWindowForAdmin*> clientIdWindowHash;
+
+    QMenu* menu; // 고객 리스트 tree widget context 메뉴
+
+    QFile* file;                     // 수신 받는 파일
+    QProgressDialog* progressDialog; // 파일 수신 진행 상태
+    qint64 totalSize;                //   ??
+    qint64 byteReceived;             //   ??
+    QByteArray inBlock;              // ??
+
+    LogThread* logThread; // 채팅 로그를 저장하기 위한 thread
 };
 
 #endif // CHATSERVERFORM_H
