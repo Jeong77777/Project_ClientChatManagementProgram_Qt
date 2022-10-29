@@ -30,7 +30,7 @@ ChatServerForm::ChatServerForm(QWidget *parent) :
 
     /* split 사이즈 설정 */
     QList<int> sizes;
-    sizes << 120 << 500;
+    sizes << 150 << 470;
     ui->splitter->setSizes(sizes);
 
     /* 고객 리스트 tree widget의 열 너비를 설정 */

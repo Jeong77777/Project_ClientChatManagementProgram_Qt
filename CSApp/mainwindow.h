@@ -22,11 +22,8 @@ public:
 
 private slots:
     void on_actionClient_triggered();
-
     void on_actionProduct_triggered();
-
     void on_actionOrder_triggered();
-
     void on_actionChat_triggered();
 
 private:
