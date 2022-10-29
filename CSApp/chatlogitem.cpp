@@ -1,34 +1,34 @@
 #include "chatlogitem.h"
 
 
-ChatLogItem::ChatLogItem(QString ip, QString port, QString id,\
-                         QString name, QString message, QString time)
+ChatLogItem::ChatLogItem(QString senderIpPort, QString senderIpName, QString message,\
+                         QString receiverIpPort, QString receiverIdName, QString time)
 {
-    setText(0, ip);
-    setText(1, port);
-    setText(2, id);
-    setText(3, name);
-    setText(4, message);
+    setText(0, senderIpPort);
+    setText(1, senderIpName);
+    setText(2, message);
+    setText(3, receiverIpPort);
+    setText(4, receiverIdName);
     setText(5, time);
 }
 
-QString ChatLogItem::getIP() const
+QString ChatLogItem::getSenderIpPort() const
 {
     return text(0);
 }
-QString ChatLogItem::getPort() const
+QString ChatLogItem::getSenderIpName() const
 {
     return text(1);
 }
-QString ChatLogItem::getID() const
+QString ChatLogItem::getMessage() const
 {
     return text(2);
 }
-QString ChatLogItem::getName() const
+QString ChatLogItem::getReceiverIpPort() const
 {
     return text(3);
 }
-QString ChatLogItem::getMessage() const
+QString ChatLogItem::getReceiverIdName() const
 {
     return text(4);
 }

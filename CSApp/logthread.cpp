@@ -4,6 +4,9 @@
 #include <QFile>
 #include <QDateTime>
 
+/**
+ * @brief 생성자, 로그를 저장하는 파일 이름 설정
+ */
 LogThread::LogThread(QObject *parent)
     : QThread{parent}
 {
@@ -11,6 +14,9 @@ LogThread::LogThread(QObject *parent)
     filename = QString("log_%1.txt").arg(QDateTime::currentDateTime().toString(format));
 }
 
+/**
+ * @brief 로그를 1분마다 자동으로 저장
+ */
 void LogThread::run()
 {
     Q_FOREVER {
@@ -19,11 +25,18 @@ void LogThread::run()
     }
 }
 
+/**
+ * @brief 새로운 채팅 추가
+ * @Param 로그 tree widget item
+ */
 void LogThread::appendData(QTreeWidgetItem* item)
 {
     itemList.append(item);
 }
 
+/**
+ * @brief 채팅 로그 저장
+ */
 void LogThread::saveData()
 {
     if(itemList.count() > 0) {

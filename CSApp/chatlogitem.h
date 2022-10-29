@@ -3,17 +3,19 @@
 
 #include <QTreeWidgetItem>
 
-
+/**
+* @brief Chat log를 저장하는 tree widget item 클래스
+*/
 class ChatLogItem : public QTreeWidgetItem
 {
 public:
     explicit ChatLogItem(QString="", QString="" , QString = "",\
                          QString = "", QString = "",QString="");
-    QString getIP() const;
-    QString getPort() const;
-    QString getID() const;
-    QString getName() const;
+    QString getSenderIpPort() const;
+    QString getSenderIpName() const;
     QString getMessage() const;
+    QString getReceiverIpPort() const;
+    QString getReceiverIdName() const;
     QString getTime() const;
 
 };

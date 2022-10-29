@@ -21,7 +21,7 @@ class ChatServerForm;
 typedef enum {
     Chat_Login,    // 로그인(connect)
     Chat_In,       // 채팅 참여
-    Chat_Talk,     // 채팅
+    Chat_Talk,     // 채팅 주고 받기
     Chat_Out,      // 채팅 나가기
     Chat_LogOut,   // 로그 아웃(disconnect)
     Chat_Invite,   // 초대
@@ -46,26 +46,26 @@ private slots:
 
     /* 채팅 서버 */
     void clientConnect( ); // 새로운 연결을 위한 슬롯
-    void receiveData( );   // 데이터(메시지)를 받는 슬롯
-    void removeClient( );  // 연결을 끊겼을 때의 슬롯
-    void openChatWindow(); // 관리자 채팅창을 여는 슬롯
+    void receiveData( );   // 메시지를 받는 슬롯
+    void removeClient( );  // 고객과의 연결을 끊겼을 때의 슬롯
+    void openChatWindow(); // 관리자의 채팅창을 여는 슬롯
     void inviteClient();   // 고객을 채팅방에 초대하는 슬롯
-    // 관리자 채팅창에서 고객을 채팅방에 초대하는 슬롯
+    // 관리자의 채팅창에서 고객을 채팅방에 초대하는 슬롯
     void inviteClientInChatWindow(QString);
-    void kickOut();        // 고객을 채팅방으로부터 강퇴하는 슬롯
-    // 관리자 채팅창에서 고객을 채팅방으로부터 강퇴하는 슬롯
+    void kickOut();        // 고객을 채팅방에서 강퇴하는 슬롯
+    // 관리자의 채팅창에서 고객을 채팅방으로부터 강퇴하는 슬롯
     void kickOutInChatWindow(QString);
     // 관리자가 고객에게 채팅을 전송하기 위한 슬롯
     void sendData(QString, QString);
 
-    // 고객 리스트 tree widget 위에서 우클릭한 위치에서 context menu 출력
+    // 고객 리스트 tree widget의 context menu 슬롯
     void on_clientTreeWidget_customContextMenuRequested(const QPoint &pos);
 
 private:
     const int BLOCK_SIZE = 1024;  // 블록 사이즈
     const int PORT_NUMBER = 8000; // 채팅을 위한 port number
 
-    // 고객 채팅방으로 로그인 결과를 전송
+    // 고객에게 로그인 결과를 전송
     void sendLoginResult(QTcpSocket*, const char*);
 
     Ui::ChatServerForm *ui; // ui
@@ -85,9 +85,9 @@ private:
 
     QFile* file;                     // 수신 받는 파일
     QProgressDialog* progressDialog; // 파일 수신 진행 상태
-    qint64 totalSize;                //   ??
-    qint64 byteReceived;             //   ??
-    QByteArray inBlock;              // ??
+    qint64 totalSize;                // 총 데이터의 크기(파일 + 파일 정보)
+    qint64 byteReceived;             // 수신한 누적 데이터의 크기
+    QByteArray inBlock;              // 파일 수신을 위한 블록
 
     LogThread* logThread; // 채팅 로그를 저장하기 위한 thread
 };
