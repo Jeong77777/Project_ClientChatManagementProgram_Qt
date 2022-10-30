@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ProductManagerForm</class>
- <widget class="QWidget" name="ProductManagerForm">
+ <class>ClientManagerForm</class>
+ <widget class="QWidget" name="ClientManagerForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -30,7 +30,7 @@
           <item>
            <widget class="QPushButton" name="showAllPushButton">
             <property name="text">
-             <string>&amp;Show All</string>
+             <string>Show All</string>
             </property>
            </widget>
           </item>
@@ -61,12 +61,17 @@
               </item>
               <item>
                <property name="text">
-                <string>Type</string>
+                <string>Name</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>Name</string>
+                <string>Phone Number</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Address</string>
                </property>
               </item>
              </widget>
@@ -74,31 +79,12 @@
             <item>
              <widget class="QLineEdit" name="searchLineEdit"/>
             </item>
-            <item>
-             <widget class="QComboBox" name="searchTypeComboBox">
-              <item>
-               <property name="text">
-                <string>치과장비</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>치과재료</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>위생용품</string>
-               </property>
-              </item>
-             </widget>
-            </item>
            </layout>
           </item>
           <item>
            <widget class="QPushButton" name="searchPushButton">
             <property name="text">
-             <string>S&amp;earch</string>
+             <string>Search</string>
             </property>
            </widget>
           </item>
@@ -132,7 +118,7 @@
             <item row="0" column="0">
              <widget class="QLabel" name="idLabel">
               <property name="text">
-               <string>I&amp;D</string>
+               <string>ID</string>
               </property>
               <property name="buddy">
                <cstring>idLineEdit</cstring>
@@ -140,29 +126,32 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="typeLabel">
-              <property name="text">
-               <string>Type</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="priceLabel">
-              <property name="text">
-               <string>Price</string>
-              </property>
-              <property name="buddy">
-               <cstring>priceLineEdit</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
              <widget class="QLabel" name="nameLabel">
               <property name="text">
                <string>Name</string>
               </property>
               <property name="buddy">
                <cstring>nameLineEdit</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="addressLabel">
+              <property name="text">
+               <string>Address</string>
+              </property>
+              <property name="buddy">
+               <cstring>addressLineEdit</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="phoneNumberLabel">
+              <property name="text">
+               <string>Phone Number</string>
+              </property>
+              <property name="buddy">
+               <cstring>phoneNumberLineEdit</cstring>
               </property>
              </widget>
             </item>
@@ -173,40 +162,18 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="1">
+            <item row="1" column="1">
              <widget class="QLineEdit" name="nameLineEdit"/>
             </item>
-            <item row="3" column="1">
-             <widget class="QLineEdit" name="priceLineEdit"/>
-            </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="stockLabel">
-              <property name="text">
-               <string>Stock</string>
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="phoneNumberLineEdit">
+              <property name="placeholderText">
+               <string>00(0)-000(0)-0000</string>
               </property>
              </widget>
             </item>
-            <item row="4" column="1">
-             <widget class="QLineEdit" name="stockLineEdit"/>
-            </item>
-            <item row="1" column="1">
-             <widget class="QComboBox" name="typeComboBox">
-              <item>
-               <property name="text">
-                <string>치과장비</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>치과재료</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>위생용품</string>
-               </property>
-              </item>
-             </widget>
+            <item row="3" column="1">
+             <widget class="QLineEdit" name="addressLineEdit"/>
             </item>
            </layout>
           </item>
@@ -215,14 +182,14 @@
             <item>
              <widget class="QPushButton" name="addPushButton">
               <property name="text">
-               <string>&amp;Add</string>
+               <string>Add</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="modifyPushButton">
               <property name="text">
-               <string>&amp;Modify</string>
+               <string>Modify</string>
               </property>
              </widget>
             </item>
@@ -238,7 +205,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="resources.qrc">
+               <iconset resource="resource.qrc">
                 <normaloff>:/images/erase.png</normaloff>:/images/erase.png</iconset>
               </property>
              </widget>
@@ -277,22 +244,17 @@
          </column>
          <column>
           <property name="text">
-           <string>Type</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
            <string>Name</string>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>Unit Price</string>
+           <string>Phone Number</string>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>Quantities in stock</string>
+           <string>Address</string>
           </property>
          </column>
         </widget>
@@ -304,7 +266,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="resource.qrc"/>
  </resources>
  <connections/>
 </ui>

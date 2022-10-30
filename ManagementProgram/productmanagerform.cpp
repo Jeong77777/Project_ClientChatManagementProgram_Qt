@@ -27,7 +27,7 @@ ProductManagerForm::ProductManagerForm(QWidget *parent) :
 
     /* tree widget의 context 메뉴 설정 */
     // tree widget에서 고객을 삭제하는 action
-    QAction* removeAction = new QAction(tr("&Remove"));
+    QAction* removeAction = new QAction(tr("Remove"));
     connect(removeAction, SIGNAL(triggered()), SLOT(removeItem()));
     menu = new QMenu; // context 메뉴
     menu->addAction(removeAction);
@@ -140,7 +140,7 @@ void ProductManagerForm::on_searchPushButton_clicked()
     else {     // ID, Name
         str = ui->searchLineEdit->text();
         if(!str.length()) { // 검색 창이 비어 있을 때
-            QMessageBox::information(this, tr("Search error"),
+            QMessageBox::warning(this, tr("Search error"),
                                      tr("Please enter a search term."), QMessageBox::Ok);
             return;
         }
@@ -180,7 +180,7 @@ void ProductManagerForm::on_addPushButton_clicked()
         cleanInputLineEdit(); // 입력 창 클리어
     }
     else { // 비어있는 입력 창이 있을 때
-        QMessageBox::information(this, tr("Add error"),
+        QMessageBox::warning(this, tr("Add error"),
            QString(tr("Some items have not been entered.")), QMessageBox::Ok);
     }
 }
@@ -215,7 +215,7 @@ void ProductManagerForm::on_modifyPushButton_clicked()
             productList[key] = p;
         }
         else { // 비어있는 입력 창이 있을 때
-            QMessageBox::information(this, tr("Modify error"), \
+            QMessageBox::warning(this, tr("Modify error"), \
                QString(tr("Some items have not been entered.")), \
                                      QMessageBox::Ok);
         }

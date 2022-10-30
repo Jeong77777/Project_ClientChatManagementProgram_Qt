@@ -28,6 +28,10 @@ typedef enum {
     Chat_KickOut,  // 강퇴
 } Chat_Status;
 
+
+/**
+* @brief 채팅 서버를 관리하는 클래스
+*/
 class ChatServerForm : public QWidget
 {
     Q_OBJECT

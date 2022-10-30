@@ -19,6 +19,7 @@ OrderManagerForm::OrderManagerForm(QWidget *parent, \
     ui(new Ui::OrderManagerForm)
 {
     ui->setupUi(this);
+    ui->searchDateEdit->setDate(QDate::currentDate());
 
     /* 검색 결과를 저장하는 flag 초기화 */
     searchedClientFlag = false;
@@ -33,7 +34,7 @@ OrderManagerForm::OrderManagerForm(QWidget *parent, \
     ui->splitter->setSizes(sizes);
 
     /* tree widget의 context 메뉴 설정 */
-    QAction* removeAction = new QAction(tr("&Remove"));
+    QAction* removeAction = new QAction(tr("Remove"));
     connect(removeAction, SIGNAL(triggered()), SLOT(removeItem()));
     menu = new QMenu; // context 메뉴
     menu->addAction(removeAction);
@@ -146,7 +147,7 @@ void OrderManagerForm::on_searchPushButton_clicked()
     if(i != 1) { // ID, Client, Product
         str = ui->searchLineEdit->text();
         if(!str.length()) { // 검색 창이 비어 있을 때
-            QMessageBox::information(this, tr("Search error"), \
+            QMessageBox::warning(this, tr("Search error"), \
                                      tr("Please enter a search term."), \
                                      QMessageBox::Ok);
             return;
@@ -163,6 +164,9 @@ void OrderManagerForm::on_searchPushButton_clicked()
         v->setHidden(true);
     foreach(auto i, items)
         i->setHidden(false);
+
+    ui->clientTreeWidget->clear();  // 고객 상세 정보 클리어
+    ui->productTreeWidget->clear(); // 제품 상세 정보 클리어
 }
 
 /**
@@ -250,7 +254,7 @@ void OrderManagerForm::on_addPushButton_clicked()
         cleanInputLineEdit(); // 입력 창 클리어
 
     } catch (QString msg) { // 비어있는 입력 창이 있을 때
-        QMessageBox::information(this, tr("Add error"),
+        QMessageBox::warning(this, tr("Add error"),
                                  QString(msg), QMessageBox::Ok);
     }
 
@@ -325,7 +329,7 @@ void OrderManagerForm::on_modifyPushButton_clicked()
             on_treeWidget_itemClicked(item, 0);
         }
         catch (QString msg) { // 비어있는 입력 창이 있을 때
-            QMessageBox::information(this, tr("Add error"),
+            QMessageBox::warning(this, tr("Add error"),
                                      QString(msg), QMessageBox::Ok);
         }
 

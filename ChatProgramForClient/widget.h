@@ -44,7 +44,6 @@ private slots:
     void sendProtocol(Chat_Status, char*, int = 1020);
     void sendFile();       // 관리자(서버)로 파일을 보내기 위한 슬롯
     void goOnSend(qint64); // 파일을 여러 번 나눠서 전송하기 위한 슬롯
-    void connectError(QAbstractSocket::SocketError); // 연결 에러가 발생했을 때의 슬롯
 
 private:
     Ui::Widget *ui;

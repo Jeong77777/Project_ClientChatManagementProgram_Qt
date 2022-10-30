@@ -34,7 +34,7 @@ private:
     Ui::ChatWindowForAdmin *ui;
     QString clientId;
     QString clientName;
-    QString clientState;    
+    QString clientState;
 };
 
 #endif // CHATWINDOWFORADMIN_H

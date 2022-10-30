@@ -67,7 +67,6 @@ Widget::Widget(QWidget *parent)
             [=]{ qDebug() << clientSocket->errorString(); });
     connect(clientSocket, SIGNAL(readyRead()), SLOT(receiveData()));
     connect(clientSocket, SIGNAL(disconnected()), SLOT(disconnect()));
-    connect(clientSocket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(connectError(QAbstractSocket::SocketError)));
 
     /* 파일 전송을 위한 소켓 생성 */
     fileClient = new QTcpSocket(this);
@@ -110,8 +109,8 @@ Widget::Widget(QWidget *parent)
     /* 로그아웃 기능 */
     connect(ui->logOutButton, &QPushButton::clicked, this,
             [=]{
-        sendProtocol(Chat_LogOut, ui->id->text().toStdString().data());
         ui->connectButton->setText(tr("Log In"));
+        sendProtocol(Chat_LogOut, ui->id->text().toStdString().data());        
         ui->fileButton->setDisabled(true);
         ui->sentButton->setDisabled(true);
         ui->message->clear();
@@ -162,13 +161,11 @@ void Widget::receiveData( )
             ui->connectButton->setEnabled(true);
         }
         else {
-            clientSocket->blockSignals(true);
             ui->connectButton->setEnabled(true);
             QMessageBox::critical(this, tr("Chatting Client"), \
                                   tr("Login failed.\nCustomer information is invalid."));
             ui->id->setReadOnly(false);
             ui->name->setReadOnly(false);
-            clientSocket->blockSignals(false);
         }
         break;
 
@@ -189,7 +186,7 @@ void Widget::receiveData( )
         ui->inputLine->setDisabled(true);
         ui->sentButton->setDisabled(true);
         ui->fileButton->setDisabled(true);
-        ui->connectButton->setText("Chat in");
+        ui->connectButton->setText(tr("Chat in"));
         break;
 
 
@@ -200,7 +197,7 @@ void Widget::receiveData( )
         ui->inputLine->setEnabled(true);
         ui->sentButton->setEnabled(true);
         ui->fileButton->setEnabled(true);
-        ui->connectButton->setText("Chat Out");
+        ui->connectButton->setText(tr("Chat Out"));
         break;
 
 
@@ -229,6 +226,10 @@ void Widget::sendData()
  */
 void Widget::disconnect()
 {
+    if(ui->connectButton->text() != tr("Log In"))
+    QMessageBox::critical(this, tr("Chatting Client"), \
+                              tr("Disconnect from Server"));
+
     // 버튼, 입력 창 상태 변경
     ui->inputLine->setEnabled(false);
     ui->id->setReadOnly(false);
@@ -236,6 +237,7 @@ void Widget::disconnect()
     ui->sentButton->setEnabled(false);
     ui->fileButton->setEnabled(false);
     ui->connectButton->setText(tr("Log In"));
+    isSent = false;
 }
 
 /**
@@ -331,16 +333,4 @@ void Widget::goOnSend(qint64 numBytes)
         qDebug("File sending completed!");
         progressDialog->reset();
     }
-}
-
-/**
- * @brief 연결 에러가 발생했을 때의 슬롯
- * @param i 발생한 에러의 종류
- */
-void Widget::connectError(QAbstractSocket::SocketError i)
-{
-    QMessageBox::critical(this, tr("Chatting Client"), \
-                          tr("A Connection error occurred"));
-    ui->connectButton->setEnabled(true);
-    qDebug() << i;
 }

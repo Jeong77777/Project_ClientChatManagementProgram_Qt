@@ -30,7 +30,7 @@ ClientManagerForm::ClientManagerForm(QWidget *parent) :
 
     /* tree widget의 context 메뉴 설정 */
     // tree widget에서 고객을 삭제하는 action
-    QAction* removeAction = new QAction(tr("&Remove"));
+    QAction* removeAction = new QAction(tr("Remove"));
     connect(removeAction, SIGNAL(triggered()), SLOT(removeItem()));
     menu = new QMenu; // context 메뉴
     menu->addAction(removeAction);
